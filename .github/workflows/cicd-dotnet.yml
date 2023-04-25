@@ -27,7 +27,6 @@ jobs:
     uses: ./.github/workflows/step-build-dotnet.yml
     needs:
       - tests
-      - codeql
     with:
       version-dotnet: ${{ inputs.version-dotnet }}
       solution: ${{ inputs.solution }}
@@ -36,6 +35,7 @@ jobs:
     uses: ./.github/workflows/step-publish-dotnet-nuget.yml
     needs:
       - build
+      - codeql
     secrets: inherit
 
 

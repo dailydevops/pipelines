@@ -48,7 +48,7 @@ jobs:
           ${{ runner.os }}-nuget
 
     - name: Restore dependencies
-      if: steps.nuget-cache.outcome != 'success'
+      if: steps.nuget-cache.outputs.cache-hit != 'true'
       run: dotnet restore ${{ inputs.solution }}
 
     - name: Build
