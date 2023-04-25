@@ -1,0 +1,42 @@
+name: Build & Run .NET
+
+on:
+  workflow_call:
+    inputs:
+      version-dotnet:
+        required: true
+        type: string
+        default: 7.x
+      solution:
+        required: true
+        type: string
+
+jobs:
+  tests:
+    uses: ./.github/workflows/step-tests-dotnet.yml
+    with:
+      version-dotnet: ${{ inputs.version-dotnet }}
+      solution: ${{ inputs.solution }}
+    secrets: inherit
+  codeql:
+    uses: ./.github/workflows/step-codeql-dotnet.yml
+    with:
+      version-dotnet: ${{ inputs.version-dotnet }}
+      solution: ${{ inputs.solution }}
+  build:
+    uses: ./.github/workflows/step-build-dotnet.yml
+    needs:
+      - tests
+      - codeql
+    with:
+      version-dotnet: ${{ inputs.version-dotnet }}
+      solution: ${{ inputs.solution }}
+    secrets: inherit
+  nuget:
+    uses: ./.github/workflows/step-publish-dotnet-nuget.yml
+    needs:
+      - build
+    secrets: inherit
+
+
+

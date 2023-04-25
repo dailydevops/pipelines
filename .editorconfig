@@ -1,0 +1,22 @@
+# EditorConfig is awesome: https://EditorConfig.org
+# top-most EditorConfig file
+root = true
+
+# DO NOT CHANGE SETTINGS IN THIS FILE. PLEASE CREATE PULL REQUEST IN REPOSITORY `dotnet-engineering`.
+
+# Don't use tabs for indentation.
+[*]
+insert_final_newline = true
+indent_style = space
+trim_trailing_whitespace = true
+charset = utf-8
+end_of_line = lf
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+insert_final_newline = false
+indent_size = 2

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {},
+	"extensions": {
+		"recommendations": [
+			"github.vscode-github-actions",
+			"EditorConfig.EditorConfig"
+		]
+	}
+}
