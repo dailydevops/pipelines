@@ -1,5 +1,3 @@
-name: Build & Run .NET
-
 on:
   workflow_call:
     inputs:
@@ -11,27 +9,41 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CACHE_RESTORE_KEY: nuget-${{ github.event.pull_request.number || github.ref }}
+
 jobs:
   tests:
+    name: Tests .NET
     uses: ./.github/workflows/step-tests-dotnet.yml
     with:
+      cache-restore-key: $CACHE_RESTORE_KEY
       version-dotnet: ${{ inputs.version-dotnet }}
       solution: ${{ inputs.solution }}
     secrets: inherit
   codeql:
+    name: CodeQL .NET
     uses: ./.github/workflows/step-codeql-dotnet.yml
     with:
+      cache-restore-key: $CACHE_RESTORE_KEY
       version-dotnet: ${{ inputs.version-dotnet }}
       solution: ${{ inputs.solution }}
   build:
+    name: Build .NET
     uses: ./.github/workflows/step-build-dotnet.yml
     needs:
       - tests
     with:
+      cache-restore-key: $CACHE_RESTORE_KEY
       version-dotnet: ${{ inputs.version-dotnet }}
       solution: ${{ inputs.solution }}
     secrets: inherit
   nuget:
+    name: Publish NuGet
     uses: ./.github/workflows/step-publish-dotnet-nuget.yml
     needs:
       - build

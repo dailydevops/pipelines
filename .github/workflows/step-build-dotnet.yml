@@ -1,8 +1,9 @@
-name: Run .NET Tests
-
 on:
   workflow_call:
     inputs:
+      cache-restore-key:
+        required: true
+        type: string
       version-dotnet:
         required: true
         type: string
@@ -45,7 +46,7 @@ jobs:
         # Look to see if there is a cache hit for the corresponding requirements file
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-nuget
+          ${{ inputs.cache-restore-key }}
 
     - name: Restore dependencies
       if: steps.nuget-cache.outputs.cache-hit != 'true'
