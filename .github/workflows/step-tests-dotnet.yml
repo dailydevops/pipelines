@@ -1,9 +1,6 @@
 on:
   workflow_call:
     inputs:
-      cache-restore-key:
-        required: true
-        type: string
       dotnet-logging:
         required: false
         type: string
@@ -52,18 +49,7 @@ jobs:
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
 
-    - name: Load NuGet Cache
-      uses: actions/cache@v3
-      id: nuget-cache
-      with:
-        path: ~/.nuget/packages
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ inputs.cache-restore-key }}-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ inputs.cache-restore-key }}
-
     - name: Restore dependencies
-      if: steps.nuget-cache.outputs.cache-hit != 'true'
       run: dotnet restore ${{ inputs.solution }}
 
     - name: Build

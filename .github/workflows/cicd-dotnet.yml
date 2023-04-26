@@ -22,7 +22,6 @@ jobs:
     name: Tests .NET
     uses: ./.github/workflows/step-tests-dotnet.yml
     with:
-      cache-restore-key: nuget-${{ github.ref }}
       dotnet-logging: ${{ inputs.dotnet-logging }}
       dotnet-version: ${{ inputs.dotnet-version }}
       solution: ${{ inputs.solution }}
@@ -31,7 +30,6 @@ jobs:
     name: CodeQL .NET
     uses: ./.github/workflows/step-codeql-dotnet.yml
     with:
-      cache-restore-key: nuget-${{ github.ref }}
       dotnet-logging: ${{ inputs.dotnet-logging }}
       dotnet-version: ${{ inputs.dotnet-version }}
       solution: ${{ inputs.solution }}
@@ -41,7 +39,6 @@ jobs:
     needs:
       - tests
     with:
-      cache-restore-key: nuget-${{ github.ref }}
       dotnet-logging: ${{ inputs.dotnet-logging }}
       dotnet-version: ${{ inputs.dotnet-version }}
       solution: ${{ inputs.solution }}
