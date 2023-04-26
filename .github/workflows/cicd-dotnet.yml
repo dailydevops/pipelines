@@ -36,7 +36,7 @@ jobs:
     with:
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
-      dotnet-version: ${{ inputs.dotnet-version }}
+      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
@@ -45,7 +45,7 @@ jobs:
     uses: ./.github/workflows/step-codeql-dotnet.yml
     with:
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnet-version }}
+      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       solution: ${{ inputs.solution }}
   build:
     name: Build .NET
@@ -54,7 +54,7 @@ jobs:
       - tests
     with:
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnet-version }}
+      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
