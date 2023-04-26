@@ -20,9 +20,17 @@ concurrency:
 jobs:
   tests:
     name: Tests .NET
+    strategy:
+      fail-fast: false
+      matrix:
+        category:
+          - IntegrationTest
+          - UnitTest
+
     uses: ./.github/workflows/step-tests-dotnet.yml
     with:
       dotnet-logging: ${{ inputs.dotnet-logging }}
+      dotnet-testfilter: ${{ matrix.category }}
       dotnet-version: ${{ inputs.dotnet-version }}
       solution: ${{ inputs.solution }}
     secrets: inherit
