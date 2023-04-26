@@ -8,6 +8,10 @@ on:
         required: false
         type: string
         default: minimal
+      dotnet-testfilter:
+        required: false
+        type: string
+        default: ''
       dotnet-version:
         required: false
         type: string
@@ -25,7 +29,8 @@ env:
     DOTNET_NOLOGO: true
 
 jobs:
-  build:
+  testing:
+    name: "Testing"
     strategy:
       fail-fast: false
       matrix:
@@ -65,7 +70,12 @@ jobs:
       run: dotnet build ${{ inputs.solution }} -c Release --no-restore
 
     - name: Test
+      if: inputs.dotnet-testfilter == ''
       run: dotnet test ${{ inputs.solution }} -c Release --no-restore --collect:"XPlat Code Coverage"
+
+    - name: Test
+      if: inputs.dotnet-testfilter != ''
+      run: dotnet test ${{ inputs.solution }} -c Release --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ inputs.dotnet-testfilter }}"
 
     - name: Update codecov
       uses: codecov/codecov-action@v3
