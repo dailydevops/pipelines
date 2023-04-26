@@ -34,7 +34,7 @@ jobs:
     name: Tests .NET
     uses: ./.github/workflows/step-tests-dotnet.yml
     with:
-      dotnet-logging: ${{ inputs.dotnet-logging }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
       dotnet-version: ${{ inputs.dotnet-version }}
       runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
@@ -44,7 +44,7 @@ jobs:
     name: CodeQL .NET
     uses: ./.github/workflows/step-codeql-dotnet.yml
     with:
-      dotnet-logging: ${{ inputs.dotnet-logging }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version }}
       solution: ${{ inputs.solution }}
   build:
@@ -53,7 +53,7 @@ jobs:
     needs:
       - tests
     with:
-      dotnet-logging: ${{ inputs.dotnet-logging }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version }}
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
