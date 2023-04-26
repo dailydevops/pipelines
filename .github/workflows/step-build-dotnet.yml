@@ -9,6 +9,10 @@ on:
         required: false
         type: string
         default: 7.x
+      runs-on:
+        required: false
+        type: string
+        default: ubuntu-latest
       solution:
         required: true
         type: string
@@ -20,7 +24,8 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Building
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
 
     steps:
     - name: Checkout repository
@@ -35,10 +40,10 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Restore dependencies
-      run: dotnet restore ${{ inputs.solution }}
+      run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Build
-      run: dotnet build ${{ inputs.solution }} -c Release --no-restore
+      run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }} -c Release --no-restore
 
     - name: Upload NuGet packages
       uses: actions/upload-artifact@v3

@@ -5,10 +5,22 @@ on:
         required: false
         type: string
         default: minimal
+      dotnet-testfilter:
+        required: false
+        type: string
+        default: ''
       dotnet-version:
         required: false
         type: string
         default: 7.x
+      runs-on-build:
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      runs-on-tests:
+        required: false
+        type: string
+        default: 'ubuntu-latest'
       solution:
         required: true
         type: string
@@ -20,18 +32,12 @@ concurrency:
 jobs:
   tests:
     name: Tests .NET
-    strategy:
-      fail-fast: false
-      matrix:
-        category:
-          - IntegrationTest
-          - UnitTest
-
     uses: ./.github/workflows/step-tests-dotnet.yml
     with:
       dotnet-logging: ${{ inputs.dotnet-logging }}
-      dotnet-testfilter: ${{ matrix.category }}
+      dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
       dotnet-version: ${{ inputs.dotnet-version }}
+      runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
   codeql:
@@ -49,6 +55,7 @@ jobs:
     with:
       dotnet-logging: ${{ inputs.dotnet-logging }}
       dotnet-version: ${{ inputs.dotnet-version }}
+      runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
   nuget:
