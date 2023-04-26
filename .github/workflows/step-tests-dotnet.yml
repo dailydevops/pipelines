@@ -4,17 +4,20 @@ on:
       cache-restore-key:
         required: true
         type: string
-      version-dotnet:
-        required: true
+      dotnet-logging:
+        required: false
         type: string
+        default: minimal
+      dotnet-version:
+        required: false
+        type: string
+        default: 7.x
       solution:
         required: true
         type: string
     secrets:
       CODECOV_TOKEN:
-        required: true
-      NUGET_TOKEN:
-        required: true
+        required: false
 
 env:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -30,7 +33,6 @@ jobs:
           - ubuntu-latest
           - windows-latest
 
-    name: Build & Test
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -43,7 +45,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ inputs.version-dotnet }}
+        dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Load NuGet Cache
       uses: actions/cache@v3
@@ -51,7 +53,7 @@ jobs:
       with:
         path: ~/.nuget/packages
         # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        key: ${{ inputs.cache-restore-key }}-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ inputs.cache-restore-key }}
 
@@ -67,6 +69,9 @@ jobs:
 
     - name: Update codecov
       uses: codecov/codecov-action@v3
+      env:
+        codecov_token: ${{ secrets.CODECOV_TOKEN }}
+      if: ${{ env.codecov_token != '' }}
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ env.codecov_token }}
         fail_ci_if_error: true

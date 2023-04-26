@@ -6,7 +6,6 @@ on:
 
 jobs:
   nuget:
-    name: "Publish to NuGet.org"
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
 
