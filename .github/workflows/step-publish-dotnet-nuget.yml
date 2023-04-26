@@ -1,5 +1,3 @@
-name: Run .NET Tests
-
 on:
   workflow_call:
     secrets:
@@ -8,7 +6,7 @@ on:
 
 jobs:
   nuget:
-    name: "Publish to NuGet.org"
+    name: Publish NuGet Packages
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
 

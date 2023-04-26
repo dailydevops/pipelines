@@ -1,11 +1,14 @@
-name: CodeQL .NET
-
 on:
   workflow_call:
     inputs:
-      version-dotnet:
-        required: true
+      dotnet-logging:
+        required: false
         type: string
+        default: minimal
+      dotnet-version:
+        required: false
+        type: string
+        default: 7.x
       solution:
         required: true
         type: string
@@ -16,7 +19,7 @@ defaults:
 
 jobs:
   codeql:
-    name: Execute CodeQL .NET
+    name: Run CodeQL
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -30,23 +33,12 @@ jobs:
         fetch-depth: 0
         submodules: recursive
 
-    - name: Install .NET ${{ inputs.version-dotnet }}
+    - name: Install .NET ${{ inputs.dotnet-version }}
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ inputs.version-dotnet }}
-
-    - name: Load NuGet Cache
-      uses: actions/cache@v3
-      id: nuget-cache
-      with:
-        path: ~/.nuget/packages
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget
+        dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Restore dependencies
-      if: steps.nuget-cache.outcome != 'success'
       run: dotnet restore ${{ inputs.solution }}
 
     - name: Initialize CodeQL

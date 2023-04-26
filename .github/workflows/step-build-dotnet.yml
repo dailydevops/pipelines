@@ -1,19 +1,21 @@
-name: Run .NET Tests
-
 on:
   workflow_call:
     inputs:
-      version-dotnet:
-        required: true
+      dotnet-logging:
+        required: false
         type: string
+        default: minimal
+      dotnet-version:
+        required: false
+        type: string
+        default: 7.x
+      runs-on:
+        required: false
+        type: string
+        default: ubuntu-latest
       solution:
         required: true
         type: string
-    secrets:
-      CODECOV_TOKEN:
-        required: true
-      NUGET_TOKEN:
-        required: true
 
 env:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -22,8 +24,8 @@ env:
 
 jobs:
   build:
-    name: Build & Test
-    runs-on: ubuntu-latest
+    name: Building
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
 
     steps:
     - name: Checkout repository
@@ -35,24 +37,13 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ inputs.version-dotnet }}
-
-    - name: Load NuGet Cache
-      uses: actions/cache@v3
-      id: nuget-cache
-      with:
-        path: ~/.nuget/packages
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget
+        dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Restore dependencies
-      if: steps.nuget-cache.outcome != 'success'
-      run: dotnet restore ${{ inputs.solution }}
+      run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Build
-      run: dotnet build ${{ inputs.solution }} -c Release --no-restore
+      run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }} -c Release --no-restore
 
     - name: Upload NuGet packages
       uses: actions/upload-artifact@v3

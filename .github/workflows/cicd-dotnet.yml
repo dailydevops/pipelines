@@ -1,41 +1,69 @@
-name: Build & Run .NET
-
 on:
   workflow_call:
     inputs:
-      version-dotnet:
-        required: true
+      dotnet-logging:
+        required: false
+        type: string
+        default: minimal
+      dotnet-testfilter:
+        required: false
+        type: string
+        default: ''
+      dotnet-version:
+        required: false
         type: string
         default: 7.x
+      runs-on-build:
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      runs-on-tests:
+        required: false
+        type: string
+        default: 'ubuntu-latest'
       solution:
         required: true
         type: string
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
+    name: Tests .NET
     uses: ./.github/workflows/step-tests-dotnet.yml
     with:
-      version-dotnet: ${{ inputs.version-dotnet }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
+      dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
+      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
+      runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
   codeql:
+    name: CodeQL .NET
     uses: ./.github/workflows/step-codeql-dotnet.yml
     with:
-      version-dotnet: ${{ inputs.version-dotnet }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
+      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       solution: ${{ inputs.solution }}
   build:
+    name: Build .NET
     uses: ./.github/workflows/step-build-dotnet.yml
     needs:
       - tests
-      - codeql
     with:
-      version-dotnet: ${{ inputs.version-dotnet }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
+      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
+      runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
   nuget:
+    name: Publish NuGet.org
     uses: ./.github/workflows/step-publish-dotnet-nuget.yml
     needs:
       - build
+      - codeql
     secrets: inherit
 
 

@@ -1,19 +1,28 @@
-name: Run .NET Tests
-
 on:
   workflow_call:
     inputs:
-      version-dotnet:
-        required: true
+      dotnet-logging:
+        required: false
         type: string
+        default: minimal
+      dotnet-testfilter:
+        required: false
+        type: string
+        default: ''
+      dotnet-version:
+        required: false
+        type: string
+        default: 7.x
+      runs-on:
+        required: false
+        type: string
+        default: ubuntu-latest
       solution:
         required: true
         type: string
     secrets:
       CODECOV_TOKEN:
-        required: true
-      NUGET_TOKEN:
-        required: true
+        required: false
 
 env:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -21,16 +30,9 @@ env:
     DOTNET_NOLOGO: true
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-
-    name: Build & Test
-    runs-on: ${{ matrix.os }}
+  testing:
+    name: Testing
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
 
     steps:
     - name: Checkout repository
@@ -42,30 +44,27 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ inputs.version-dotnet }}
-
-    - name: Load NuGet Cache
-      uses: actions/cache@v3
-      id: nuget-cache
-      with:
-        path: ~/.nuget/packages
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget
+        dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: Restore dependencies
-      if: steps.nuget-cache.outcome != 'success'
-      run: dotnet restore ${{ inputs.solution }}
+      run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Build
-      run: dotnet build ${{ inputs.solution }} -c Release --no-restore
+      run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore
 
     - name: Test
-      run: dotnet test ${{ inputs.solution }} -c Release --no-restore --collect:"XPlat Code Coverage"
+      if: inputs.dotnet-testfilter == ''
+      run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage"
+
+    - name: Test
+      if: inputs.dotnet-testfilter != ''
+      run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ inputs.dotnet-testfilter }}"
 
     - name: Update codecov
       uses: codecov/codecov-action@v3
+      env:
+        codecov_token: ${{ secrets.CODECOV_TOKEN }}
+      if: ${{ env.codecov_token != '' }}
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ env.codecov_token }}
         fail_ci_if_error: true
