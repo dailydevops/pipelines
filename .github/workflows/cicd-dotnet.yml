@@ -63,6 +63,7 @@ jobs:
       runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
+
   codeql:
     name: CodeQL .NET
     if: ${{ inputs.disableCodeQL == 'false' }}
@@ -74,6 +75,12 @@ jobs:
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       solution: ${{ inputs.solution }}
+
+  sonarcloud:
+    name: Sonarcloud
+    uses: ./.github/workflows/step-sonarcloud.yml
+    secrets: inherit
+
   build:
     name: Build .NET
     uses: ./.github/workflows/step-dotnet-build.yml
@@ -86,6 +93,7 @@ jobs:
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
+
   nuget:
     name: Publish NuGet.org
     if: ${{ inputs.disablePublish == 'false' }}
@@ -93,6 +101,7 @@ jobs:
     needs:
       - build
       - codeql
+      - sonarcloud
     secrets: inherit
 
 
