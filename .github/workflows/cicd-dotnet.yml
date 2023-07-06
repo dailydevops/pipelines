@@ -15,10 +15,7 @@ on:
         default: 7.x
       dotnet-quality:
         required: false
-        type: choice
-        options:
-        - ga
-        - preview
+        type: string
         default: ga
       runs-on-build:
         required: false
