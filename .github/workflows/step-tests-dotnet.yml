@@ -13,6 +13,10 @@ on:
         required: false
         type: string
         default: 7.x
+      dotnet-quality:
+        required: false
+        type: string
+        default: ga
       runs-on:
         required: false
         type: string
@@ -45,12 +49,10 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
+        dotnet-quality: ${{ inputs.dotnet-quality }}
 
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
-
-    - name: Build
-      run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore
 
     - name: Test
       if: inputs.dotnet-testfilter == ''

@@ -9,6 +9,10 @@ on:
         required: false
         type: string
         default: 7.x
+      dotnet-quality:
+        required: false
+        type: string
+        default: ga
       solution:
         required: true
         type: string
@@ -37,6 +41,7 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
+        dotnet-quality: ${{ inputs.dotnet-quality }}
 
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }}

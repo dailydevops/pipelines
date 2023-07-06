@@ -13,6 +13,13 @@ on:
         required: false
         type: string
         default: 7.x
+      dotnet-quality:
+        required: false
+        type: choice
+        options:
+        - ga
+        - preview
+        default: ga
       runs-on-build:
         required: false
         type: string
@@ -37,6 +44,7 @@ jobs:
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
+      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
@@ -46,6 +54,7 @@ jobs:
     with:
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
+      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       solution: ${{ inputs.solution }}
   build:
     name: Build .NET
@@ -55,6 +64,7 @@ jobs:
     with:
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
+      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
