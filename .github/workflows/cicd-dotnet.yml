@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      disablePublish:
+        required: false
+        type: boolean
+        default: false
       dotnet-logging:
         required: false
         type: string
@@ -67,6 +71,7 @@ jobs:
     secrets: inherit
   nuget:
     name: Publish NuGet.org
+    if: ${{ inputs.disablePublish == 'false' }}
     uses: ./.github/workflows/step-publish-dotnet-nuget.yml
     needs:
       - build
