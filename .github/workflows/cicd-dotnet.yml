@@ -48,7 +48,7 @@ jobs:
       solution: ${{ inputs.solution }}
   tests:
     name: Tests .NET
-    uses: ./.github/workflows/step-tests-dotnet.yml
+    uses: ./.github/workflows/step-dotnet-tests.yml
     needs:
       - format
     with:
@@ -61,7 +61,7 @@ jobs:
     secrets: inherit
   codeql:
     name: CodeQL .NET
-    uses: ./.github/workflows/step-codeql-dotnet.yml
+    uses: ./.github/workflows/step-dotnet-codeql.yml
     needs:
       - format
     with:
@@ -71,7 +71,7 @@ jobs:
       solution: ${{ inputs.solution }}
   build:
     name: Build .NET
-    uses: ./.github/workflows/step-build-dotnet.yml
+    uses: ./.github/workflows/step-dotnet-build.yml
     needs:
       - tests
     with:
@@ -84,7 +84,7 @@ jobs:
   nuget:
     name: Publish NuGet.org
     if: ${{ inputs.disablePublish == 'false' }}
-    uses: ./.github/workflows/step-publish-dotnet-nuget.yml
+    uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
       - build
       - codeql
