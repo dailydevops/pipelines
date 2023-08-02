@@ -39,9 +39,6 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
-    - name: Install `dotnet-format` tool
-      run: dotnet tool install -g dotnet-format
-
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
@@ -49,7 +46,6 @@ jobs:
       uses: zyactions/dotnet-lint@v1
       with:
         workspace: ${{ inputs.solution }}
-        use-standalone-tool: true
 
 #    - name: Execute `dotnet-format`
 #      run: dotnet format ${{ inputs.solution }} --verify-no-changes --verbosity ${{ inputs.dotnet-logging }}
