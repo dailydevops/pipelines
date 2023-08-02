@@ -1,0 +1,39 @@
+on:
+  workflow_call:
+    inputs:
+      dotnet-version:
+        required: false
+        type: string
+        default: 7.x
+      dotnet-quality:
+        required: false
+        type: string
+        default: ga
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  format:
+    name: Validate Code Formatting
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        submodules: recursive
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+        dotnet-quality: ${{ inputs.dotnet-quality }}
+
+    - name: Install `dotnet-format` tool
+      run: dotnet tool install -g dotnet-format
+
+    - name: Execute `dotnet-format`
+      run: dotnet format '.\' --folder --check --verbosity diagnostic
