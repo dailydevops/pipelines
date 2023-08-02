@@ -45,10 +45,5 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
-    - name: .NET Lint
-      uses: zyactions/dotnet-lint@v1
-      with:
-        workspace: ${{ inputs.solution }}
-
-#    - name: Execute `dotnet-format`
-#      run: dotnet format ${{ inputs.solution }} --verify-no-changes --verbosity ${{ inputs.dotnet-logging }}
+    - name: Execute `dotnet-format`
+      run: dotnet format ${{ inputs.solution }} --verify-no-changes --verbosity ${{ inputs.dotnet-logging }}
