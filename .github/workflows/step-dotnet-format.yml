@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      dotnet-logging:
+        required: false
+        type: string
+        default: minimal
       dotnet-version:
         required: false
         type: string
@@ -9,6 +13,9 @@ on:
         required: false
         type: string
         default: ga
+      solution:
+        required: true
+        type: string
 
 defaults:
   run:
@@ -35,5 +42,13 @@ jobs:
     - name: Install `dotnet-format` tool
       run: dotnet tool install -g dotnet-format
 
-    - name: Execute `dotnet-format`
-      run: dotnet format '.\' --folder --check --verbosity diagnostic
+    - name: Restore dependencies
+      run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
+
+    - name: .NET Lint
+      uses: zyactions/dotnet-lint@v1
+      with:
+        workspace: ${{ inputs.solution }}
+
+#    - name: Execute `dotnet-format`
+#      run: dotnet format ${{ inputs.solution }} --verify-no-changes --verbosity ${{ inputs.dotnet-logging }}
