@@ -57,21 +57,21 @@ jobs:
         cache: true
 
     - name: Set up JDK 11
-      if: ${{ inputs.disableSonarQube == 'false' }}
+      if: inputs.disableSonarQube == 'false'
       uses: actions/setup-java@v3
       with:
         java-version: 11
         distribution: 'zulu'
 
     - name: Install SonarCloud scanner
-      if: ${{ inputs.disableSonarQube == 'false' }}
+      if: inputs.disableSonarQube == 'false'
       shell: powershell
       run: |
         New-Item -Path .\.sonar\scanner -ItemType Directory
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
     - name: Start SonarQube
-      if: ${{ inputs.disableSonarQube == 'false' }}
+      if: inputs.disableSonarQube == 'false'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -91,7 +91,7 @@ jobs:
       run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ inputs.dotnet-testfilter }}"
 
     - name: Start SonarQube
-      if: ${{ inputs.disableSonarQube == 'false' }}
+      if: inputs.disableSonarQube == 'false'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -103,7 +103,7 @@ jobs:
       uses: codecov/codecov-action@v3
       env:
         codecov_token: ${{ secrets.CODECOV_TOKEN }}
-      if: ${{ env.codecov_token != '' }}
+      if: env.codecov_token != ''
       with:
         token: ${{ env.codecov_token }}
         fail_ci_if_error: true
