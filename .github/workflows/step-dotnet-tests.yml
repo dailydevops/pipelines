@@ -91,7 +91,7 @@ jobs:
       if: ${{ inputs.dotnet-testfilter != '' }}
       run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ inputs.dotnet-testfilter }}"
 
-    - name: Start SonarQube
+    - name: Finish SonarQube
       if: inputs.disableSonarQube == false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
