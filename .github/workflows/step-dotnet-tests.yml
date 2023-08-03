@@ -65,7 +65,7 @@ jobs:
 
     - name: Install SonarCloud scanner
       if: inputs.disableSonarQube == false
-      shell: powershell
+      shell: pwsh
       run: |
         New-Item -Path .\.sonar\scanner -ItemType Directory
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
@@ -75,7 +75,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: powershell
+      shell: pwsh
       run: |
         .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
 
@@ -83,11 +83,11 @@ jobs:
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Test
-      if: inputs.dotnet-testfilter == ''
+      if: ${{ inputs.dotnet-testfilter == ''  }}
       run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage"
 
     - name: Test
-      if: inputs.dotnet-testfilter != ''
+      if: ${{ inputs.dotnet-testfilter != '' }}
       run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ inputs.dotnet-testfilter }}"
 
     - name: Start SonarQube
@@ -95,7 +95,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: powershell
+      shell: pwsh
       run: |
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
