@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      disableCodeQL:
+        required: false
+        type: boolean
+        default: false
       disablePublish:
         required: false
         type: boolean
@@ -61,6 +65,7 @@ jobs:
     secrets: inherit
   codeql:
     name: CodeQL .NET
+    if: ${{ inputs.disableCodeQL == 'false' }}
     uses: ./.github/workflows/step-dotnet-codeql.yml
     needs:
       - format
