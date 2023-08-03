@@ -94,16 +94,6 @@ jobs:
       solution: ${{ inputs.solution }}
     secrets: inherit
 
-  sonarcloud:
-    name: Sonarcloud
-    uses: ./.github/workflows/step-sonarcloud.yml
-    with:
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
-      runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
-      solution: ${{ inputs.solution }}
-    secrets: inherit
-
   nuget:
     name: Publish NuGet.org
     if: ${{ inputs.disablePublish == 'false' }}
