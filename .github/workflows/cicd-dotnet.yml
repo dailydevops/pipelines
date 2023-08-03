@@ -40,6 +40,10 @@ on:
       solution:
         required: true
         type: string
+      sonarqube-project:
+        required: false
+        type: string
+        default: ''
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -54,6 +58,7 @@ jobs:
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       solution: ${{ inputs.solution }}
+
   tests:
     name: Tests .NET
     uses: ./.github/workflows/step-dotnet-tests.yml
@@ -67,6 +72,7 @@ jobs:
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
+      sonarqube-project: ${{ inputs.sonarqube-project || '' }}
     secrets: inherit
 
   codeql:

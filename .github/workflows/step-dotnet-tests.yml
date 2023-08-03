@@ -28,6 +28,10 @@ on:
       solution:
         required: true
         type: string
+      sonarqube-project:
+        required: false
+        type: string
+        default: ''
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -56,7 +60,7 @@ jobs:
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
     - name: Setup JDK 11
-      if: inputs.disableSonarQube == false
+      if: false
       uses: actions/setup-java@v3
       with:
         java-version: 11
@@ -74,7 +78,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: pwsh
       run: |
-        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        dotnet-sonarscanner begin /k:"${{ inputs.sonarqube-project || secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
 
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
