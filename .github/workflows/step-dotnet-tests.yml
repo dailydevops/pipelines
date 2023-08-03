@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      disableSonarCube:
+        required: false
+        type: boolean
+        default: false
       dotnet-logging:
         required: false
         type: string
@@ -51,6 +55,29 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
+    - name: Set up JDK 11
+      if: ${{ inputs.disableSonarCube == 'false' }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: 11
+        distribution: 'zulu'
+
+    - name: Install SonarCloud scanner
+      if: ${{ inputs.disableSonarCube == 'false' }}
+      shell: powershell
+      run: |
+        New-Item -Path .\.sonar\scanner -ItemType Directory
+        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+
+    - name: Start SonarQube
+      if: ${{ inputs.disableSonarCube == 'false' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: powershell
+      run: |
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
@@ -61,6 +88,15 @@ jobs:
     - name: Test
       if: inputs.dotnet-testfilter != ''
       run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ inputs.dotnet-testfilter }}"
+
+    - name: Start SonarQube
+      if: ${{ inputs.disableSonarCube == 'false' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: powershell
+      run: |
+        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     - name: Update codecov
       uses: codecov/codecov-action@v3
