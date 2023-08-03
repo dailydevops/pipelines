@@ -54,7 +54,6 @@ jobs:
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
-        cache: true
 
     - name: Setup JDK 11
       if: inputs.disableSonarQube == false
