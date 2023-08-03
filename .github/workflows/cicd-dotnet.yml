@@ -71,7 +71,7 @@ jobs:
 
   codeql:
     name: CodeQL .NET
-    if: inputs.disableCodeQL == 'false'
+    if: inputs.disableCodeQL == false
     uses: ./.github/workflows/step-dotnet-codeql.yml
     needs:
       - format
@@ -96,7 +96,7 @@ jobs:
 
   nuget:
     name: Publish NuGet.org
-    if: inputs.disablePublish == 'false'
+    if: inputs.disablePublish == false
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
       - build
