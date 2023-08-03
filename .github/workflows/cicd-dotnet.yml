@@ -9,7 +9,7 @@ on:
         required: false
         type: boolean
         default: false
-      disableSonarCube:
+      disableSonarQube:
         required: false
         type: boolean
         default: false
@@ -60,7 +60,7 @@ jobs:
     needs:
       - format
     with:
-      disableSonarCube: ${{ inputs.disableSonarCube || false }}
+      disableSonarQube: ${{ inputs.disableSonarQube || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
