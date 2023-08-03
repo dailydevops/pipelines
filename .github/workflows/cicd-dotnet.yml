@@ -50,7 +50,6 @@ jobs:
     name: Validate Code formatting
     uses: ./.github/workflows/step-dotnet-format.yml
     with:
-      disableSonarCube: ${{ inputs.disableSonarCube || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
@@ -61,6 +60,7 @@ jobs:
     needs:
       - format
     with:
+      disableSonarCube: ${{ inputs.disableSonarCube || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
