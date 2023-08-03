@@ -101,7 +101,6 @@ jobs:
     needs:
       - build
       - codeql
-      - sonarcloud
     secrets: inherit
 
 
