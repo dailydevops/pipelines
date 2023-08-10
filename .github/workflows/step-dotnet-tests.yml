@@ -57,11 +57,11 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
-    - name: Setup JDK 11
+    - name: Setup JDK 17
       if: ${{ inputs.enableSonarQube == true }}
       uses: actions/setup-java@v3
       with:
-        java-version: 11
+        java-version: 17
         distribution: 'zulu'
 
     - name: Install SonarCloud scanner
