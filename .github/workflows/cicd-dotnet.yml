@@ -9,10 +9,6 @@ on:
         required: false
         type: boolean
         default: false
-      disableSonarQube:
-        required: false
-        type: boolean
-        default: false
       dotnet-logging:
         required: false
         type: string
@@ -29,6 +25,10 @@ on:
         required: false
         type: string
         default: ga
+      enableSonarQube:
+        required: false
+        type: boolean
+        default: false
       runs-on-build:
         required: false
         type: string
@@ -60,7 +60,7 @@ jobs:
     needs:
       - format
     with:
-      disableSonarQube: ${{ inputs.disableSonarQube || false }}
+      enableSonarQube: ${{ inputs.enableSonarQube || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}

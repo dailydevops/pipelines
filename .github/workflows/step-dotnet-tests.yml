@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      disableSonarQube:
+      enableSonarQube:
         required: false
         type: boolean
         default: false
@@ -31,6 +31,8 @@ on:
     secrets:
       CODECOV_TOKEN:
         required: false
+      SONAR_TOKEN:
+        required: false
 
 env:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -56,21 +58,21 @@ jobs:
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
     - name: Setup JDK 11
-      if: inputs.disableSonarQube == false
+      if: ${{ inputs.enableSonarQube == true }}
       uses: actions/setup-java@v3
       with:
         java-version: 11
         distribution: 'zulu'
 
     - name: Install SonarCloud scanner
-      if: inputs.disableSonarQube == false
+      if: ${{ inputs.enableSonarQube == true }}
       shell: pwsh
       run: dotnet tool install --global dotnet-sonarscanner --version 5.13.0
 
-    - name: Start SonarQube
-      if: inputs.disableSonarQube == false
+    - name: Start SonarQube Analysis
+      if: ${{ inputs.enableSonarQube == true }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: pwsh
       run: |
@@ -83,14 +85,14 @@ jobs:
       if: ${{ inputs.dotnet-testfilter == ''  }}
       run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage"
 
-    - name: Test
+    - name: Test with Filter
       if: ${{ inputs.dotnet-testfilter != '' }}
       run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ inputs.dotnet-testfilter }}"
 
-    - name: Start SonarQube
-      if: inputs.disableSonarQube == false
+    - name: Stop SonarQube Analysis
+      if: ${{ inputs.enableSonarQube == true }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: pwsh
       run: |
