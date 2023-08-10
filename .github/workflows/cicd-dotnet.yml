@@ -25,6 +25,10 @@ on:
         required: false
         type: string
         default: ga
+      enableSonarQube:
+        required: false
+        type: boolean
+        default: false
       runs-on-build:
         required: false
         type: string
@@ -56,6 +60,7 @@ jobs:
     needs:
       - format
     with:
+      enableSonarQube: ${{ inputs.enableSonarQube || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
@@ -63,9 +68,10 @@ jobs:
       runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
+
   codeql:
     name: CodeQL .NET
-    if: ${{ inputs.disableCodeQL == 'false' }}
+    if: ${{ inputs.disableCodeQL == false }}
     uses: ./.github/workflows/step-dotnet-codeql.yml
     needs:
       - format
@@ -74,6 +80,7 @@ jobs:
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       solution: ${{ inputs.solution }}
+
   build:
     name: Build .NET
     uses: ./.github/workflows/step-dotnet-build.yml
@@ -86,9 +93,10 @@ jobs:
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
+
   nuget:
     name: Publish NuGet.org
-    if: ${{ inputs.disablePublish == 'false' }}
+    if: ${{ inputs.disablePublish == false }}
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
       - build
