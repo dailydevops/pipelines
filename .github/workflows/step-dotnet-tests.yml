@@ -96,7 +96,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: pwsh
       run: |
-        dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Update codecov
       uses: codecov/codecov-action@v3
