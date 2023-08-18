@@ -56,22 +56,21 @@ jobs:
       solution: ${{ inputs.solution }}
 
   pretest:
-    name: Prepare Test Stage
+    name: Prepare Test Matrix
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.generate.outputs.matrix }}
-    needs:
-      - format
     steps:
       - name: Generate Matrix
         id: generate
         run: |
-          echo "::set-output name=matrix::${{ format('[{0}]', inputs.dotnet-testfilter) }}"
+          echo "matrix=${{ format('[{0}]', inputs.dotnet-testfilter) }}" >> $GITHUB_OUTPUT
 
   tests:
     name: Tests .NET
     uses: ./.github/workflows/step-dotnet-tests.yml
     needs:
+      - format
       - pretest
     strategy:
       matrix:
