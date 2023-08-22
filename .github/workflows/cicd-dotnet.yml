@@ -16,7 +16,7 @@ on:
       dotnet-testfilter:
         required: false
         type: string
-        default: "''"
+        default: '""'
       dotnet-version:
         required: false
         type: string
@@ -63,7 +63,7 @@ jobs:
     with:
       enableSonarQube: ${{ inputs.enableSonarQube || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
-      dotnet-testfilter: ${{ inputs.dotnet-testfilter || "''" }}
+      dotnet-testfilter: ${{ inputs.dotnet-testfilter || '""' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
