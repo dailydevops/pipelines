@@ -12,7 +12,7 @@ on:
       dotnet-testfilter:
         required: false
         type: string
-        default: ''
+        default: "'UnitTest'"
       dotnet-version:
         required: false
         type: string
