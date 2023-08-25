@@ -12,13 +12,4 @@ updates:
     labels:
       - "dependency"
     reviewers:
-      - "dailydevops/authors"
-
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    labels:
-      - "dependency"
-    reviewers:
-      - "dailydevops/authors"
+      - "dailydevops/maintainer"
