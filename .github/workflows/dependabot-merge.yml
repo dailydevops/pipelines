@@ -16,7 +16,7 @@ jobs:
           github-token: ${{ secrets.DEPENDABOT }}
 
       - name: Approve Minor PR
-        if: ${{ steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major' }}
+        if: ${{ steps.metadata.outputs.update-type != 'version-update:semver-major' }}
         run: |
           gh pr review --approve "$PR_URL"
         env:
@@ -24,7 +24,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.DEPENDABOT }}
 
       - name: Enable auto-merge for Dependabot Pull Request
-        if: ${{ steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major' }}
+        if: ${{ steps.metadata.outputs.update-type != 'version-update:semver-major' }}
         run: gh pr merge --auto --squash "$PR_URL" --subject "$PR_MESSAGE [skip ci]"
         env:
           PR_MESSAGE: ${{ github.event.pull_request.title }}
