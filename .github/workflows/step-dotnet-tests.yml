@@ -119,7 +119,7 @@ jobs:
       uses: codecov/codecov-action@v3
       env:
         codecov_token: ${{ secrets.CODECOV_TOKEN }}
-      if: env.codecov_token != ''
+      if: ${{ secrets.CODECOV_TOKEN != '' }}
       with:
         token: ${{ env.codecov_token }}
         fail_ci_if_error: true
