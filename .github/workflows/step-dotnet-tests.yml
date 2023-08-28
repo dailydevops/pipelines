@@ -55,7 +55,7 @@ jobs:
         run: |
           if [ ${{ inputs.dotnet-testfilter }} -eq '' ]
           then
-            echo "matrix=['']" >> $GITHUB_OUTPUT
+            echo "matrix=['none']" >> $GITHUB_OUTPUT
           else
             echo "matrix=${{ format('[{0}]', inputs.dotnet-testfilter) }}" >> $GITHUB_OUTPUT
           fi
@@ -110,11 +110,11 @@ jobs:
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Test
-      if: ${{ matrix.testfilter == ''  }}
+      if: ${{ matrix.testfilter == 'none'  }}
       run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage"
 
     - name: Test with Filter
-      if: ${{ matrix.testfilter != '' }}
+      if: ${{ matrix.testfilter != 'none' }}
       run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ matrix.testfilter }}"
 
     - name: Stop SonarQube Analysis
