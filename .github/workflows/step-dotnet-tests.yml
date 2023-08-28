@@ -95,7 +95,7 @@ jobs:
     - name: Install SonarCloud scanner
       if: ${{ inputs.enableSonarQube == true }}
       shell: pwsh
-      run: dotnet tool install --global dotnet-sonarscanner --version 5.13.0
+      run: dotnet tool install --global dotnet-sonarscanner
 
     - name: Start SonarQube Analysis
       if: ${{ inputs.enableSonarQube == true }}
