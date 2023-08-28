@@ -97,7 +97,7 @@ jobs:
 
   nuget:
     name: Publish NuGet.org
-    if: ${{ inputs.disablePublish == false }}
+    if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
       - build
