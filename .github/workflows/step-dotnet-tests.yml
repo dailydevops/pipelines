@@ -104,7 +104,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: pwsh
       run: |
-        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
 
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
@@ -113,9 +113,9 @@ jobs:
       run: |
         if [ '${{ matrix.testfilter }}' == 'none' ]
         then
-          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage"
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat="opencover,cobertura" /p:UseSourceLink=true --collect:"XPlat Code Coverage"
         else
-          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ matrix.testfilter }}"
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat="opencover,cobertura" /p:UseSourceLink=true --collect:"XPlat Code Coverage" --filter "TestCategory=${{ matrix.testfilter }}"
         fi
 
     - name: Stop SonarQube Analysis
