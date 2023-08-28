@@ -53,7 +53,7 @@ jobs:
       - name: Generate Matrix
         id: generate
         run: |
-          if [ ${{ inputs.dotnet-testfilter }} -eq '' ]
+          if [ '${{ inputs.dotnet-testfilter }}' -eq '' ]
           then
             echo "matrix=['none']" >> $GITHUB_OUTPUT
           else
