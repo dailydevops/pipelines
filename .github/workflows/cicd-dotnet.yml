@@ -55,6 +55,18 @@ jobs:
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       solution: ${{ inputs.solution }}
 
+  codeql:
+    name: CodeQL .NET
+    if: ${{ inputs.disableCodeQL == false }}
+    uses: ./.github/workflows/step-dotnet-codeql.yml
+    needs:
+      - format
+    with:
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
+      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
+      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
+      solution: ${{ inputs.solution }}
+
   tests:
     name: Tests .NET
     uses: ./.github/workflows/step-dotnet-tests.yml
@@ -69,18 +81,6 @@ jobs:
       runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
     secrets: inherit
-
-  codeql:
-    name: CodeQL .NET
-    if: ${{ inputs.disableCodeQL == false }}
-    uses: ./.github/workflows/step-dotnet-codeql.yml
-    needs:
-      - format
-    with:
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
-      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
-      solution: ${{ inputs.solution }}
 
   build:
     name: Build .NET
