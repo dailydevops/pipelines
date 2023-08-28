@@ -56,6 +56,8 @@ jobs:
     runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
     needs:
       - pretest
+    env:
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
     strategy:
       matrix:
@@ -117,9 +119,7 @@ jobs:
 
     - name: Update codecov
       uses: codecov/codecov-action@v3
-      env:
-        codecov_token: ${{ secrets.CODECOV_TOKEN }}
-      if: ${{ secrets.CODECOV_TOKEN != '' }}
+      if: env.codecov_token != ''
       with:
         token: ${{ env.codecov_token }}
         fail_ci_if_error: true
