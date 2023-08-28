@@ -110,12 +110,13 @@ jobs:
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Test
-      if: ${{ matrix.testfilter == 'none'  }}
-      run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage"
-
-    - name: Test with Filter
-      if: ${{ matrix.testfilter != 'none' }}
-      run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ matrix.testfilter }}"
+      run: |
+        if [ '${{ matrix.testfilter }}' == 'none' ]
+        then
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage"
+        else
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ matrix.testfilter }}"
+        fi
 
     - name: Stop SonarQube Analysis
       if: ${{ inputs.enableSonarQube == true }}
