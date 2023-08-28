@@ -110,6 +110,7 @@ jobs:
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Test
+      id: test
       run: |
         if [ '${{ matrix.testfilter }}' == 'none' ]
         then
@@ -119,7 +120,7 @@ jobs:
         fi
 
     - name: Stop SonarQube Analysis
-      if: ${{ inputs.enableSonarQube == true }}
+      if: ${{ inputs.enableSonarQube == true && (success() || steps.test.conclusion == 'failure') }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -129,7 +130,7 @@ jobs:
 
     - name: Update codecov
       uses: codecov/codecov-action@v3
-      if: env.codecov_token != ''
+      if: ${{ env.codecov_token != '' && (success() || steps.test.conclusion == 'failure') }}
       with:
         token: ${{ env.codecov_token }}
         fail_ci_if_error: true
