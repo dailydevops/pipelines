@@ -113,9 +113,9 @@ jobs:
       run: |
         if [ '${{ matrix.testfilter }}' == 'none' ]
         then
-          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat="opencover,cobertura" /p:UseSourceLink=true --collect:"XPlat Code Coverage"
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:UseSourceLink=true --collect:"XPlat Code Coverage"
         else
-          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat="opencover,cobertura" /p:UseSourceLink=true --collect:"XPlat Code Coverage" --filter "TestCategory=${{ matrix.testfilter }}"
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:UseSourceLink=true --collect:"XPlat Code Coverage" --filter "TestCategory=${{ matrix.testfilter }}"
         fi
 
     - name: Stop SonarQube Analysis
