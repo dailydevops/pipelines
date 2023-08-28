@@ -12,7 +12,7 @@ on:
       dotnet-testfilter:
         required: false
         type: string
-        default: "'UnitTest'"
+        default: ''
       dotnet-version:
         required: false
         type: string
@@ -30,6 +30,10 @@ on:
         type: string
     secrets:
       CODECOV_TOKEN:
+        required: false
+      SONAR_ORGANIZATION:
+        required: false
+      SONAR_PROJECT:
         required: false
       SONAR_TOKEN:
         required: false
@@ -49,7 +53,12 @@ jobs:
       - name: Generate Matrix
         id: generate
         run: |
-          echo "matrix=${{ format('[{0}]', inputs.dotnet-testfilter) }}" >> $GITHUB_OUTPUT
+          if [ -z '${{ inputs.dotnet-testfilter }}' ]
+          then
+            echo "matrix=['none']" >> $GITHUB_OUTPUT
+          else
+            echo "matrix=${{ format('[{0}]', inputs.dotnet-testfilter) }}" >> $GITHUB_OUTPUT
+          fi
 
   testing:
     name: Testing
@@ -86,7 +95,7 @@ jobs:
     - name: Install SonarCloud scanner
       if: ${{ inputs.enableSonarQube == true }}
       shell: pwsh
-      run: dotnet tool install --global dotnet-sonarscanner --version 5.13.0
+      run: dotnet tool install --global dotnet-sonarscanner
 
     - name: Start SonarQube Analysis
       if: ${{ inputs.enableSonarQube == true }}
@@ -101,12 +110,13 @@ jobs:
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Test
-      if: ${{ matrix.testfilter == ''  }}
-      run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage"
-
-    - name: Test with Filter
-      if: ${{ matrix.testfilter != '' }}
-      run: dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ matrix.testfilter }}"
+      run: |
+        if [ '${{ matrix.testfilter }}' == 'none' ]
+        then
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage"
+        else
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter "TestCategory=${{ matrix.testfilter }}"
+        fi
 
     - name: Stop SonarQube Analysis
       if: ${{ inputs.enableSonarQube == true }}
