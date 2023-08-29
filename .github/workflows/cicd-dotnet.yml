@@ -59,8 +59,6 @@ jobs:
     name: CodeQL .NET
     if: ${{ inputs.disableCodeQL == false }}
     uses: ./.github/workflows/step-dotnet-codeql.yml
-    needs:
-      - format
     with:
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
@@ -70,8 +68,6 @@ jobs:
   tests:
     name: Tests .NET
     uses: ./.github/workflows/step-dotnet-tests.yml
-    needs:
-      - format
     with:
       enableSonarQube: ${{ inputs.enableSonarQube || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
@@ -100,6 +96,7 @@ jobs:
     if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
+      - format
       - codeql
       - build
     secrets: inherit
