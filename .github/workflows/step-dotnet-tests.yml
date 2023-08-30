@@ -141,4 +141,4 @@ jobs:
       with:
         name: coverage-reports
         path: |
-          **/*.opencover.xml
+          **/TestResults/**/*.opencover.xml
