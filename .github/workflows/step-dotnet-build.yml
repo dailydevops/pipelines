@@ -55,5 +55,5 @@ jobs:
       with:
         name: release-packages
         path: |
-          **/*.nupkg
-          **/*.snupkg
+          **/Release/**/*.nupkg
+          **/Release/**/*.snupkg
