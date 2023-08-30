@@ -135,3 +135,10 @@ jobs:
       with:
         token: ${{ env.codecov_token }}
         fail_ci_if_error: true
+
+    - name: Upload Coverage Reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-reports
+        path: |
+          **/*.opencover.xml
