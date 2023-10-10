@@ -46,6 +46,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  version:
+    name: Determine solution version
+    uses: ./.github/workflows/step-dotnet-version.yml
+    with:
+      dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
+      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
+
   format:
     name: Validate Code formatting
     uses: ./.github/workflows/step-dotnet-format.yml
@@ -67,6 +74,8 @@ jobs:
 
   tests:
     name: Tests .NET
+    needs:
+      - version
     uses: ./.github/workflows/step-dotnet-tests.yml
     with:
       enableSonarQube: ${{ inputs.enableSonarQube || false }}
@@ -76,6 +85,7 @@ jobs:
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
+      solution-version: ${{ needs.version.outputs.solution-version }}
     secrets: inherit
 
   build:
@@ -96,10 +106,19 @@ jobs:
     if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
-      - format
-      - codeql
       - build
+      - codeql
     secrets: inherit
 
-
+  release:
+    name: Create GitHub Draft Release
+    if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
+    needs:
+      - version
+      - build
+      - codeql
+    uses: ./.github/workflows/step-dotnet-draft-release.yml
+    with:
+      runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
+      solution-version: ${{ needs.version.outputs.solution-version }}
 

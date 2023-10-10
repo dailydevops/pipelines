@@ -28,6 +28,9 @@ on:
       solution:
         required: true
         type: string
+      solution-version:
+        required: true
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -87,17 +90,6 @@ jobs:
         java-version: 17
         distribution: 'zulu'
 
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.10.2
-      with:
-        versionSpec: '5.x'
-
-    - name: Determine Version
-      id:   gitversion
-      uses: gittools/actions/gitversion/execute@v0.10.2
-      with:
-        useConfigFile: true
-
     - name: Install SonarCloud scanner
       if: ${{ inputs.enableSonarQube == true }}
       shell: pwsh
@@ -110,7 +102,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: pwsh
       run: |
-        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/*.opencover.xml" /v:"${{ steps.gitversion.outputs.semVer }}"
+        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/*.opencover.xml" /v:"${{ inputs.solution-version }}"
 
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
