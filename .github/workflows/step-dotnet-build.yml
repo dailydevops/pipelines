@@ -28,7 +28,7 @@ env:
 
 jobs:
   build:
-    name: Building
+    name: Build .NET solution
     runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
 
     steps:

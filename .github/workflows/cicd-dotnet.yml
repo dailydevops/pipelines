@@ -47,14 +47,12 @@ concurrency:
 
 jobs:
   version:
-    name: Determine solution version
     uses: ./.github/workflows/step-dotnet-version.yml
     with:
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
 
   format:
-    name: Validate Code formatting
     uses: ./.github/workflows/step-dotnet-format.yml
     with:
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
@@ -63,7 +61,6 @@ jobs:
       solution: ${{ inputs.solution }}
 
   codeql:
-    name: CodeQL .NET
     if: ${{ inputs.disableCodeQL == false }}
     uses: ./.github/workflows/step-dotnet-codeql.yml
     with:
@@ -73,7 +70,6 @@ jobs:
       solution: ${{ inputs.solution }}
 
   tests:
-    name: Tests .NET
     needs:
       - version
     uses: ./.github/workflows/step-dotnet-tests.yml
@@ -89,7 +85,6 @@ jobs:
     secrets: inherit
 
   build:
-    name: Build .NET
     uses: ./.github/workflows/step-dotnet-build.yml
     needs:
       - tests
@@ -101,8 +96,7 @@ jobs:
       solution: ${{ inputs.solution }}
     secrets: inherit
 
-  nuget:
-    name: Publish NuGet.org
+  publish-nuget:
     if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
@@ -111,7 +105,6 @@ jobs:
     secrets: inherit
 
   release:
-    name: Create GitHub Draft Release
     if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
     needs:
       - version
