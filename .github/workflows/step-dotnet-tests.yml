@@ -53,7 +53,7 @@ jobs:
       - name: Generate Matrix
         id: generate
         run: |
-          echo "matrix=${{ format('[{0}]', inputs.dotnet-testfilter == '' && 'FullyQualifiedName~NetEvolve' ||  inputs.dotnet-testfilter) }}" >> $GITHUB_OUTPUT
+          echo "matrix=${{ format('[{0}]', inputs.dotnet-testfilter == '' && '''FullyQualifiedName~NetEvolve''' ||  inputs.dotnet-testfilter) }}" >> $GITHUB_OUTPUT
 
   testing:
     name: Testing
