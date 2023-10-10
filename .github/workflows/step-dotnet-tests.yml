@@ -53,7 +53,7 @@ jobs:
       - name: Generate Matrix
         id: generate
         run: |
-          echo "matrix=${{ format('[{0}]', inputs.dotnet-testfilter == '' && '''FullyQualifiedName~NetEvolve''' ||  inputs.dotnet-testfilter) }}" >> $GITHUB_OUTPUT
+          echo "matrix=${{ format('[{0}]', inputs.dotnet-testfilter == '' && '''none''' ||  inputs.dotnet-testfilter) }}" >> $GITHUB_OUTPUT
 
   testing:
     name: Testing
@@ -118,7 +118,7 @@ jobs:
     - name: Test
       id: test
       run: |
-        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" --filter ${{ startsWith(matrix.testfilter, 'FullyQualifiedName') && matrix.testfilter ||  format('TestCategory={0}', matrix.testfilter) }} /p:GeneratePackageOnBuild=false -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" ${{ startsWith(matrix.testfilter, 'none') && '' ||  format('--filter TestCategory={0}', matrix.testfilter) }} /p:GeneratePackageOnBuild=false -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
     - name: Stop SonarQube Analysis
       if: ${{ inputs.enableSonarQube == true && (success() || steps.test.conclusion == 'failure') }}
