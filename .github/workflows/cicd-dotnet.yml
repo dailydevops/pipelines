@@ -47,12 +47,14 @@ concurrency:
 
 jobs:
   version:
+    name: Version
     uses: ./.github/workflows/step-dotnet-version.yml
     with:
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
 
   format:
+    name: Format
     uses: ./.github/workflows/step-dotnet-format.yml
     with:
       dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
@@ -61,6 +63,7 @@ jobs:
       solution: ${{ inputs.solution }}
 
   codeql:
+    name: CodeQL
     if: ${{ inputs.disableCodeQL == false }}
     uses: ./.github/workflows/step-dotnet-codeql.yml
     with:
@@ -70,6 +73,7 @@ jobs:
       solution: ${{ inputs.solution }}
 
   tests:
+    name: Tests
     needs:
       - version
     uses: ./.github/workflows/step-dotnet-tests.yml
@@ -85,6 +89,7 @@ jobs:
     secrets: inherit
 
   build:
+    name: Build
     uses: ./.github/workflows/step-dotnet-build.yml
     needs:
       - tests
@@ -97,6 +102,7 @@ jobs:
     secrets: inherit
 
   publish-nuget:
+    name: Publish NuGet
     if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
@@ -105,6 +111,7 @@ jobs:
     secrets: inherit
 
   release:
+    name: Release
     if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
     needs:
       - version
