@@ -8,7 +8,7 @@ on:
       dotnet-logging:
         required: false
         type: string
-        default: minimal
+        default: quiet
       dotnet-testfilter:
         required: false
         type: string

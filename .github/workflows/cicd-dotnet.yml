@@ -12,7 +12,7 @@ on:
       dotnet-logging:
         required: false
         type: string
-        default: minimal
+        default: quiet
       dotnet-testfilter:
         required: false
         type: string
@@ -55,7 +55,7 @@ jobs:
   format:
     uses: ./.github/workflows/step-dotnet-format.yml
     with:
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       solution: ${{ inputs.solution }}
@@ -64,7 +64,7 @@ jobs:
     if: ${{ inputs.disableCodeQL == false }}
     uses: ./.github/workflows/step-dotnet-codeql.yml
     with:
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       solution: ${{ inputs.solution }}
@@ -75,7 +75,7 @@ jobs:
     uses: ./.github/workflows/step-dotnet-tests.yml
     with:
       enableSonarQube: ${{ inputs.enableSonarQube || false }}
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
@@ -89,7 +89,7 @@ jobs:
     needs:
       - tests
     with:
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}

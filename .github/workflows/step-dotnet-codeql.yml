@@ -4,7 +4,7 @@ on:
       dotnet-logging:
         required: false
         type: string
-        default: minimal
+        default: quiet
       dotnet-version:
         required: false
         type: string
