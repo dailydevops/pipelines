@@ -93,6 +93,7 @@ jobs:
     uses: ./.github/workflows/step-dotnet-build.yml
     needs:
       - tests
+      - format
     with:
       dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
