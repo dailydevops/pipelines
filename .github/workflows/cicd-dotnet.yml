@@ -90,7 +90,7 @@ jobs:
 
   dependabot-merge:
     name: Dependabot Merge
-    if: ${{ github.event == 'pull_request' && github.actor == 'dependabot[bot]' }}
+    if: ${{ github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
     uses: ./.github/workflows/step-dependabot-merge.yml
     needs:
       - tests
