@@ -88,6 +88,14 @@ jobs:
       solution-version: ${{ needs.version.outputs.solution-version }}
     secrets: inherit
 
+  dependabot-merge:
+    name: Dependabot Merge
+    if: ${{ github.event == 'pull_request' && github.actor == 'dependabot[bot]' }}
+    uses: ./.github/workflows/step-dependabot-merge.yml
+    needs:
+      - tests
+    secrets: inherit
+
   build:
     name: Build
     uses: ./.github/workflows/step-dotnet-build.yml

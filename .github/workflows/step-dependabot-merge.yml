@@ -1,0 +1,17 @@
+on:
+  workflow_call:
+    secrets:
+      DEPENDABOT:
+        required: true
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Dependabot Auto Merge
+        uses: ahmadnassri/action-dependabot-auto-merge@v2.6.6
+        with:
+          target: minor
+          github-token: ${{ secrets.DEPENDABOT }}
+          command: squash and merge
