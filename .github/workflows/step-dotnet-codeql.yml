@@ -47,20 +47,20 @@ jobs:
       run: dotnet restore ${{ inputs.solution }}
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: csharp
         queries: security-extended
 
     - name: Autobuild
       id: autobuild
-      uses: github/codeql-action/autobuild@v2
+      uses: github/codeql-action/autobuild@v3
 
     - name: Build .NET (error case)
       if: steps.autobuild.outcome != 'success'
       run: dotnet build ${{ inputs.solution }} -c Release
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
         category: "/language:csharp"
