@@ -9,6 +9,10 @@ on:
         required: false
         type: boolean
         default: false
+      disableCoverageUpload:
+        required: false
+        type: boolean
+        default: false
       disablePublish:
         required: false
         type: boolean
@@ -84,6 +88,7 @@ jobs:
     uses: ./.github/workflows/step-dotnet-tests.yml
     with:
       enableSonarQube: ${{ inputs.enableSonarQube || false }}
+      disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-testfilter: ${{ inputs.dotnet-testfilter }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
