@@ -11,8 +11,8 @@ jobs:
 
     steps:
       - name: Dependabot Auto Merge
-        uses: ahmadnassri/action-dependabot-auto-merge@v2.6.6
+        uses: dailydevops/dependamerge-action@feature/dependamerge
         with:
-          target: minor
-          github-token: ${{ secrets.DEPENDABOT }}
-          command: squash and merge
+          token: ${{ secrets.DEPENDABOT }}
+          command: squash
+          handle-submodule: true
