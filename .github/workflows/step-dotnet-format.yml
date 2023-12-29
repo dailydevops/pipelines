@@ -25,6 +25,8 @@ jobs:
   format:
     name: Validate Code Formatting
     runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
     - name: Checkout repository
@@ -38,6 +40,14 @@ jobs:
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
+
+    - name: NuGet cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ github.workspace }}\.nuget\packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+        restore-keys: |
+          ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}

@@ -64,6 +64,7 @@ jobs:
       - pretest
     env:
       codecov_token: ${{ secrets.CODECOV_TOKEN }}
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     strategy:
       matrix:
@@ -88,6 +89,14 @@ jobs:
       with:
         java-version: 17
         distribution: 'zulu'
+
+    - name: NuGet cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ github.workspace }}\.nuget\packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+        restore-keys: |
+          ${{ runner.os }}-nuget-
 
     - name: Install SonarCloud scanner
       if: ${{ inputs.enableSonarQube == true }}
