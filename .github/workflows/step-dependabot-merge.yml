@@ -16,3 +16,4 @@ jobs:
           token: ${{ secrets.DEPENDABOT }}
           command: squash
           handle-submodule: true
+          target: minor
