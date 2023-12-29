@@ -90,6 +90,7 @@ jobs:
     name: Tests
     needs:
       - version
+      - format
     uses: ./.github/workflows/step-dotnet-tests.yml
     with:
       enableSonarQube: ${{ inputs.enableSonarQube || false }}
