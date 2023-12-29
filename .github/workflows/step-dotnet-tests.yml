@@ -5,6 +5,10 @@ on:
         required: false
         type: boolean
         default: false
+      disableCoverageUpload:
+        required: false
+        type: boolean
+        default: false
       dotnet-logging:
         required: false
         type: string
@@ -110,7 +114,7 @@ jobs:
     - name: Test
       id: test
       run: |
-        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" ${{ matrix.testfilter != 'none' && format('--filter TestCategory={0}', matrix.testfilter) || '' }} /p:GeneratePackageOnBuild=false -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-restore --collect:"XPlat Code Coverage" ${{ matrix.testfilter != 'none' && format('--filter "TestCategory={0}"', matrix.testfilter) || '' }} /p:GeneratePackageOnBuild=false -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
     - name: Stop SonarQube Analysis
       if: ${{ inputs.enableSonarQube == true && (success() || steps.test.conclusion == 'failure') }}
@@ -131,6 +135,7 @@ jobs:
 
     - name: Upload Coverage Reports
       uses: actions/upload-artifact@v4
+      if: ${{ inputs.disableCoverageUpload == false }}
       with:
         name: coverage-reports
         path: |
