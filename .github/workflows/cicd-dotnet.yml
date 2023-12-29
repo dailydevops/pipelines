@@ -17,10 +17,6 @@ on:
         required: false
         type: boolean
         default: false
-      disableTests:
-        required: false
-        type: boolean
-        default: false
       dotnet-logging:
         required: false
         type: string
@@ -87,7 +83,6 @@ jobs:
 
   tests:
     name: Tests
-    if: ${{ inputs.disableTests == false }}
     needs:
       - version
     uses: ./.github/workflows/step-dotnet-tests.yml
