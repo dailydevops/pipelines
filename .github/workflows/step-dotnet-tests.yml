@@ -137,6 +137,6 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ inputs.disableCoverageUpload == false }}
       with:
-        name: coverage-reports
+        name: "coverage${{ matrix.testfilter != 'none' && format('-{0}', matrix.testfilter) || '' }}"
         path: |
           **/TestResults/**/*.opencover.xml
