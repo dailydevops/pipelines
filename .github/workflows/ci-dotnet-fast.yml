@@ -53,14 +53,14 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
-        run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
+        run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging || 'quiet' }}
 
       - name: Build
-        run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }} -c Release --no-restore /p:GeneratePackageOnBuild=false
+        run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnet-logging || 'quiet' }} -c Release --no-restore /p:GeneratePackageOnBuild=false
 
       - name: Test
         run: |
-          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-build --no-restore
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'quiet' }} --no-build --no-restore
 
   dependabot-merge:
     name: Dependabot Merge
