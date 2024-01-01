@@ -1,0 +1,60 @@
+on:
+  workflow_call:
+    inputs:
+      dotnet-logging:
+        required: false
+        type: string
+        default: quiet
+      dotnet-version:
+        required: false
+        type: string
+        default: 7.x
+      dotnet-quality:
+        required: false
+        type: string
+        default: ga
+      solution:
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow_ref}}@${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NUGET_PACKAGES: ~/.nuget/packages
+
+jobs:
+  build-and-test:
+    name: Build and Test ${{ inputs.solution }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+          dotnet-quality: ${{ inputs.dotnet-quality }}
+
+      - name: NuGet cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
+
+      - name: Build
+        run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }} -c Release --no-restore /p:GeneratePackageOnBuild=false
+
+      - name: Test
+        run: |
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-build --no-restore
