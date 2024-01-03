@@ -45,11 +45,6 @@ on:
       SONAR_TOKEN:
         required: false
 
-env:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-    DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    DOTNET_NOLOGO: true
-
 jobs:
   pretest:
     name: Prepare Test Matrix
