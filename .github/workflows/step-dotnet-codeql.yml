@@ -13,6 +13,10 @@ on:
         required: false
         type: string
         default: ga
+      runs-on:
+        required: false
+        type: string
+        default: ubuntu-latest
       solution:
         required: true
         type: string
@@ -24,7 +28,7 @@ defaults:
 jobs:
   codeql:
     name: Run CodeQL
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
     permissions:
       actions: read
       contents: read

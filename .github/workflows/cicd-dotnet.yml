@@ -74,6 +74,7 @@ jobs:
       dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
+      runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
 
   codeql:
@@ -84,6 +85,7 @@ jobs:
       dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-version: ${{ inputs.dotnet-version || '7.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
+      runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
 
   tests:
