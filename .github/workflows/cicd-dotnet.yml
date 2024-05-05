@@ -28,7 +28,7 @@ on:
       dotnet-version:
         required: false
         type: string
-        default: 7.x
+        default: 8.x
       dotnet-quality:
         required: false
         type: string
