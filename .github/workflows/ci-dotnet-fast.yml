@@ -72,3 +72,4 @@ jobs:
     uses: ./.github/workflows/step-dependabot-merge.yml
     needs:
       - build-and-test
+    secrets: inherit
