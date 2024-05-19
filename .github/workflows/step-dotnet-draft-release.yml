@@ -8,6 +8,9 @@ on:
       solution-version:
         required: true
         type: string
+    secrets:
+      FETCH_TOKEN:
+        required: false
 
 jobs:
   draft-release:
@@ -21,6 +24,7 @@ jobs:
       with:
         fetch-depth: 0
         submodules: recursive
+        token: ${{ secrets.FETCH_TOKEN || github.token }}
 
     - name: Release Drafter
       uses: release-drafter/release-drafter@v6.0.0

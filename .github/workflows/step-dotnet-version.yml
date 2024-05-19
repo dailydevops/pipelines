@@ -13,6 +13,9 @@ on:
         required: false
         type: string
         default: ubuntu-latest
+    secrets:
+      FETCH_TOKEN:
+        required: false
     outputs:
       solution-version:
         description: 'The FullSemVer version'
@@ -32,6 +35,7 @@ jobs:
       with:
         fetch-depth: 0
         submodules: recursive
+        token: ${{ secrets.FETCH_TOKEN || github.token }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
