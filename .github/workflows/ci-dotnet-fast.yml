@@ -16,6 +16,9 @@ on:
       solution:
         required: true
         type: string
+    secrets:
+      FETCH_TOKEN:
+        required: false
 
 concurrency:
   group: ${{ github.workflow_ref}}@${{ github.ref }}
@@ -37,6 +40,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+          token: ${{ secrets.FETCH_TOKEN || github.token }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -68,4 +72,3 @@ jobs:
     uses: ./.github/workflows/step-dependabot-merge.yml
     needs:
       - build-and-test
-    secrets: inherit

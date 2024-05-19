@@ -44,6 +44,8 @@ on:
         required: false
       SONAR_TOKEN:
         required: false
+      FETCH_TOKEN:
+        required: false
 
 jobs:
   pretest:
@@ -75,6 +77,7 @@ jobs:
       with:
         fetch-depth: 0
         submodules: recursive
+        token: ${{ secrets.FETCH_TOKEN || github.token }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
