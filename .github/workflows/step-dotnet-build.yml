@@ -53,6 +53,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: release-packages
+        if-no-files-found: error
         path: |
-          **/Release/**/*.nupkg
-          **/Release/**/*.snupkg
+          **/*.nupkg
+          **/*.snupkg
