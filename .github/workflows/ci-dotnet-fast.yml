@@ -31,8 +31,15 @@ env:
   NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
 jobs:
+  commitlinter:
+    name: Lint commit messages
+    uses: ./.github/workflows/step-commitlint.yml
+    secrets: inherit
+
   build-and-test:
     name: Build and Test ${{ inputs.solution }}
+    needs:
+      - commitlinter
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
