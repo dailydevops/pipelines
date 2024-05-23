@@ -62,8 +62,15 @@ env:
   DOTNET_NOLOGO: true
 
 jobs:
+  commitlinter:
+    name: Lint commit messages
+    uses: ./.github/workflows/step-commitlint.yml
+    secrets: inherit
+
   version:
     name: Version
+    needs:
+      - commitlinter
     uses: ./.github/workflows/step-dotnet-version.yml
     with:
       dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
@@ -72,6 +79,8 @@ jobs:
 
   format:
     name: Format
+    needs:
+      - commitlinter
     if: ${{ inputs.disableCodeFormat == false }}
     uses: ./.github/workflows/step-dotnet-format.yml
     with:
@@ -84,6 +93,8 @@ jobs:
 
   codeql:
     name: CodeQL
+    needs:
+      - commitlinter
     if: ${{ inputs.disableCodeQL == false }}
     uses: ./.github/workflows/step-dotnet-codeql.yml
     with:
