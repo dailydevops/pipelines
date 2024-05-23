@@ -64,7 +64,7 @@ env:
 jobs:
   commitlinter:
     name: Lint commit messages
-    uses: ./.github/workflows/step-commitlint.yml
+    uses: ./.github/workflows/step-node-commitlint.yml
     secrets: inherit
 
   version:
