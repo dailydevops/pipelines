@@ -118,6 +118,7 @@ jobs:
       - tests
       - format
     with:
+      disablePublish: ${{ inputs.disablePublish || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}

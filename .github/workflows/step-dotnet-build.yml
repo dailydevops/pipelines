@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      disablePublish:
+        required: false
+        type: boolean
+        default: false
       dotnet-logging:
         required: false
         type: string
@@ -50,6 +54,7 @@ jobs:
       run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }} -c Release --no-restore
 
     - name: Upload NuGet packages
+      if: ${{ inputs.disablePublish != true }}
       uses: actions/upload-artifact@v4
       with:
         name: release-packages
