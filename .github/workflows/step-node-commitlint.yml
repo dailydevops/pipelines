@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   commitlint:
+    name: Commitlint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
