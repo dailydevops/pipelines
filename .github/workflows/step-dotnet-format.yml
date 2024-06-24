@@ -47,13 +47,7 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
-    - name: Restore dependencies
-      run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
-
-    - name: .NET Lint
-      uses: zyactions/dotnet-lint@v1
-      with:
-        workspace: ${{ inputs.solution }}
-
-#    - name: Execute `dotnet-format`
-#      run: dotnet format ${{ inputs.solution }} --verify-no-changes --verbosity ${{ inputs.dotnet-logging }}
+    - name: Linting solution
+      run: |
+        dotnet tool restore
+        dotnet csharpier --check ${{ inputs.solution }}
