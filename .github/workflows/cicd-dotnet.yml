@@ -82,7 +82,6 @@ jobs:
       dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
-      solution: ${{ inputs.solution }}
     secrets: inherit
 
   codeql:

@@ -17,9 +17,6 @@ on:
         required: false
         type: string
         default: ubuntu-latest
-      solution:
-        required: true
-        type: string
     secrets:
       FETCH_TOKEN:
         required: false
@@ -50,4 +47,4 @@ jobs:
     - name: Linting solution
       run: |
         dotnet tool restore
-        dotnet csharpier --check ${{ inputs.solution }}
+        dotnet csharpier --check .
