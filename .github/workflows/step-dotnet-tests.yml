@@ -94,14 +94,14 @@ jobs:
     - name: Test
       id: test
       run: |
-        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-build --no-restore --collect:"XPlat Code Coverage" /p:GeneratePackageOnBuild=false -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-build --no-restore --collect:"XPlat Code Coverage" /p:GeneratePackageOnBuild=false -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=json,opencover
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2.16.1
       if: always()
       with:
         files: |
-          **/TestResults/**/*.opencover.xml
+          **/TestResults/**/*.json
 
     - name: Stop SonarQube Analysis
       if: ${{ inputs.enableSonarQube == true && (success() || steps.test.conclusion == 'failure') }}
