@@ -103,13 +103,6 @@ jobs:
         files: |
           **/TestResults/**/*.json
 
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2.16.1
-      if: always()
-      with:
-        files: |
-          **/TestResults/**/*.opencover.xml
-
     - name: Stop SonarQube Analysis
       if: ${{ inputs.enableSonarQube == true && (success() || steps.test.conclusion == 'failure') }}
       id: sonar
