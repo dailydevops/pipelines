@@ -72,6 +72,12 @@ jobs:
       uses: jlumbroso/free-disk-space@v1.3.1
       if: ${{ inputs.enableCleanUpDockerDocker == true && runner.os == 'Linux' }}
       with:
+        android: true
+        haskell: true
+        dotnet: false
+        large-packages: false
+        tool-cache: false
+        swap-storage: false
         docker-images: true
 
     - name: Setup .NET
