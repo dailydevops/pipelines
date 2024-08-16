@@ -5,7 +5,7 @@ on:
         required: false
         type: boolean
         default: false
-      enableCleanUp:
+      enableCleanUpDockerDocker:
         required: false
         type: boolean
         default: false
@@ -68,17 +68,11 @@ jobs:
     # multiple runners. However, we need to keep in mind that running too many
     # simultaneous builds has an impact on others as well. We observed that scheduled
     # Dependabot builds blocked others in the Testcontainers organization.
-    - name: Free Disk Space
+    - name: Free Disk Space - Docker Images
       uses: jlumbroso/free-disk-space@v1.3.1
-      if: ${{ inputs.enableCleanUp == true && runner.os == 'Linux' }}
+      if: ${{ inputs.enableCleanUpDockerDocker == true && runner.os == 'Linux' }}
       with:
-        tool-cache: true
-        android: true
-        dotnet: true
-        haskell: true
-        large-packages: true
         docker-images: true
-        swap-storage: false
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
