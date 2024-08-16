@@ -62,12 +62,6 @@ jobs:
         submodules: recursive
         token: ${{ secrets.FETCH_TOKEN || github.token }}
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ inputs.dotnet-version }}
-        dotnet-quality: ${{ inputs.dotnet-quality }}
-
     # Our modules occupy too much disk space. The GitHub-hosted runners ran into the
     # error: "no space left on device." The pulled images are not cleaned up between
     # the test runs. One obvious approach is splitting the tests and running them on
@@ -85,6 +79,12 @@ jobs:
         large-packages: true
         docker-images: true
         swap-storage: false
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+        dotnet-quality: ${{ inputs.dotnet-quality }}
 
     - name: Setup JDK 17
       if: ${{ inputs.enableSonarQube == true }}
