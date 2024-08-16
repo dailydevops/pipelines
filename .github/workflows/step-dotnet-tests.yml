@@ -5,6 +5,10 @@ on:
         required: false
         type: boolean
         default: false
+      enableCleanUp:
+        required: false
+        type: boolean
+        default: false
       disableCoverageUpload:
         required: false
         type: boolean
@@ -64,6 +68,24 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
+    # Our modules occupy too much disk space. The GitHub-hosted runners ran into the
+    # error: "no space left on device." The pulled images are not cleaned up between
+    # the test runs. One obvious approach is splitting the tests and running them on
+    # multiple runners. However, we need to keep in mind that running too many
+    # simultaneous builds has an impact on others as well. We observed that scheduled
+    # Dependabot builds blocked others in the Testcontainers organization.
+    - name: Free Disk Space
+      uses: jlumbroso/free-disk-space@v1.3.1
+      if: ${{ inputs.enableCleanUp == true && runner.os == 'Linux' }}
+      with:
+        tool-cache: true
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: false
+
     - name: Setup JDK 17
       if: ${{ inputs.enableSonarQube == true }}
       uses: actions/setup-java@v4
@@ -95,7 +117,6 @@ jobs:
       id: test
       run: |
         dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-build --no-restore --collect:"XPlat Code Coverage" /p:GeneratePackageOnBuild=false -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-
 
     - name: Stop SonarQube Analysis
       if: ${{ inputs.enableSonarQube == true && (success() || steps.test.conclusion == 'failure') }}

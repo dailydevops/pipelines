@@ -33,6 +33,10 @@ on:
         required: false
         type: boolean
         default: false
+      enableCleanUp:
+        required: false
+        type: boolean
+        default: false
       runs-on-build:
         required: false
         type: string
@@ -105,6 +109,7 @@ jobs:
     uses: ./.github/workflows/step-dotnet-tests.yml
     with:
       enableSonarQube: ${{ inputs.enableSonarQube || false }}
+      enableCleanUp: ${{ inputs.enableCleanUp || false }}
       disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
       dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
