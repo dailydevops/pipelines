@@ -44,7 +44,10 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
+    - name: Install CSharpier
+      run: |
+        dotnet tool install --global csharpier
+
     - name: Linting solution
       run: |
-        dotnet tool restore
         dotnet csharpier --check .
