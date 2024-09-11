@@ -18,7 +18,7 @@ on:
         required: false
     outputs:
       solution-version:
-        description: 'The MajorMinorPatch version'
+        description: 'The repository version, based on git history'
         value: ${{ jobs.detect-version.outputs.version }}
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
 
     outputs:
-      version: ${{ steps.gitversion.outputs.majorMinorPatch }}
+      version: ${{ steps.gitversion.outputs.fullSemVer }}
 
     steps:
     - name: Checkout repository
