@@ -18,8 +18,8 @@ on:
         required: false
     outputs:
       solution-version:
-        description: 'The FullSemVer version'
-        value: ${{ jobs.detect-version.outputs.fullSemVer }}
+        description: 'The MajorMinorPatch version'
+        value: ${{ jobs.detect-version.outputs.version }}
 
 jobs:
   detect-version:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
 
     outputs:
-      fullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}
+      version: ${{ steps.gitversion.outputs.majorMinorPatch }}
 
     steps:
     - name: Checkout repository
