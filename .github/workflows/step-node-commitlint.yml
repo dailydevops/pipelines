@@ -20,7 +20,7 @@ jobs:
           submodules: recursive
           token: ${{ secrets.FETCH_TOKEN || github.token }}
 
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version: '20'
 
