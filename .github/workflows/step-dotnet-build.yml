@@ -12,7 +12,7 @@ on:
       dotnet-version:
         required: false
         type: string
-        default: 7.x
+        default: 8.x
       dotnet-quality:
         required: false
         type: string
@@ -35,14 +35,14 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4.1.7
       with:
         fetch-depth: 0
         submodules: recursive
         token: ${{ secrets.FETCH_TOKEN || github.token }}
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v4.0.1
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
@@ -55,7 +55,7 @@ jobs:
 
     - name: Upload NuGet packages
       if: ${{ inputs.disablePublish != true }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.4.0
       with:
         name: release-packages
         if-no-files-found: error
