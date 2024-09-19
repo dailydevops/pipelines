@@ -11,11 +11,11 @@ jobs:
     steps:
 
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4.1.7
       with:
         fetch-depth: 0
 
-    - uses: FantasticFiasco/action-update-license-year@v3
+    - uses: FantasticFiasco/action-update-license-year@v3.0.2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         prTitle: 'chore: Updated LICENSE'

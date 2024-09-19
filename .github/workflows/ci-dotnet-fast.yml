@@ -8,7 +8,7 @@ on:
       dotnet-version:
         required: false
         type: string
-        default: 7.x
+        default: 8.x
       dotnet-quality:
         required: false
         type: string
@@ -43,20 +43,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
           submodules: recursive
           token: ${{ secrets.FETCH_TOKEN || github.token }}
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v4.0.1
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
           dotnet-quality: ${{ inputs.dotnet-quality }}
 
       - name: NuGet cache
-        uses: actions/cache@v4
+        uses: actions/cache@v4.0.2
         with:
           path: ${{ github.workspace }}/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
