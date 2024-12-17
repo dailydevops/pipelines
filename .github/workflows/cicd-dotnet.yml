@@ -146,7 +146,7 @@ jobs:
 
   publish-nuget:
     name: Publish NuGet
-    if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
+    if: ${{ inputs.disablePublish == false && github.event_name == 'push' && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
       - build
@@ -155,7 +155,7 @@ jobs:
 
   release:
     name: Release
-    if: ${{ inputs.disablePublish == false && github.actor != 'dependabot[bot]' }}
+    if: ${{ inputs.disablePublish == false && github.event_name == 'push' && github.actor != 'dependabot[bot]' }}
     needs:
       - version
       - build
