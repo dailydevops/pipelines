@@ -55,7 +55,7 @@ jobs:
 
     - name: Upload NuGet packages
       if: ${{ inputs.disablePublish != true }}
-      uses: actions/upload-artifact@v4.4.3
+      uses: actions/upload-artifact@v4.5.0
       with:
         name: release-packages
         if-no-files-found: error
