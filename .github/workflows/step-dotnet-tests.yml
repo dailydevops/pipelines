@@ -129,7 +129,7 @@ jobs:
         dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Update codecov
-      uses: codecov/codecov-action@v5.1.1
+      uses: codecov/codecov-action@v5.1.2
       if: ${{ env.codecov_token != '' && (success() || steps.test.conclusion == 'failure' || steps.sonar.conclusion == 'skipped' ) }}
       with:
         token: ${{ env.codecov_token }}
