@@ -48,6 +48,14 @@ on:
       solution:
         required: true
         type: string
+      retry-max-attempts:
+        required: false
+        type: number
+        default: 3
+      retry-timeout:
+        required: false
+        type: number
+        default: 15
     secrets:
       FETCH_TOKEN:
         required: false
@@ -118,6 +126,8 @@ jobs:
       runs-on: ${{ inputs.runs-on-tests || inputs.runs-on-build || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
       solution-version: ${{ needs.version.outputs.solution-version }}
+      retry-max-attempts: ${{ inputs.retry-max-attempts || 3 }}
+      retry-timeout: ${{ inputs.retry-timeout || 15 }}
     secrets: inherit
 
   build:
