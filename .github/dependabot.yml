@@ -11,3 +11,10 @@ updates:
       interval: "daily"
     labels:
       - "dependency"
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependency"
