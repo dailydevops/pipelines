@@ -13,5 +13,5 @@ jobs:
       enableSonarQube: false
       dotnet-version: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       dotnet-quality: ${{ vars.NE_DOTNET_QUALITY }}
-      solution: .\testprojects\HealthChecks.sln
+      solution: ./testprojects/HealthChecks.sln
     secrets: inherit
