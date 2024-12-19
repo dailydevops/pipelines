@@ -51,7 +51,7 @@ on:
       retry-max-attempts:
         required: false
         type: number
-        default: 3
+        default: 1
       retry-timeout:
         required: false
         type: number
