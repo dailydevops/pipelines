@@ -121,7 +121,7 @@ jobs:
     - name: Build
       run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'quiet' }} --no-restore /p:GeneratePackageOnBuild=false
 
-    - name: Retry Step
+    - name: Test
       id: test
       uses: nick-fields/retry@v3.0.0
       with:
