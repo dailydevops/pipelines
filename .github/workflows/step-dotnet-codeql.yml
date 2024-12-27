@@ -46,7 +46,7 @@ jobs:
         token: ${{ secrets.FETCH_TOKEN || github.token }}
 
     - name: Install .NET ${{ inputs.dotnet-version }}
-      uses: actions/setup-dotnet@v4.1.0
+      uses: actions/setup-dotnet@v4.2.0
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
