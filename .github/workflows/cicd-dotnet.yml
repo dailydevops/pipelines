@@ -132,10 +132,12 @@ jobs:
 
   build:
     name: Build
+    if: ${{ !cancelled() && !failure() }}
     uses: ./.github/workflows/step-dotnet-build.yml
     needs:
       - tests
       - format
+      - codeql
     with:
       disablePublish: ${{ inputs.disablePublish || false }}
       dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
@@ -151,7 +153,6 @@ jobs:
     uses: ./.github/workflows/step-dependabot-merge.yml
     needs:
       - build
-      - codeql
     secrets: inherit
 
   publish-nuget:
@@ -160,7 +161,6 @@ jobs:
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
       - build
-      - codeql
     secrets: inherit
 
   release:
@@ -169,7 +169,6 @@ jobs:
     needs:
       - version
       - build
-      - codeql
       - publish-nuget
     uses: ./.github/workflows/step-dotnet-draft-release.yml
     with:
