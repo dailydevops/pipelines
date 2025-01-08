@@ -149,7 +149,7 @@ jobs:
 
   dependabot-merge:
     name: Dependabot Merge
-    if: ${{ github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
+    if: ${{ !cancelled() && !failure() && github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
     uses: ./.github/workflows/step-dependabot-merge.yml
     needs:
       - build
@@ -157,7 +157,7 @@ jobs:
 
   publish-nuget:
     name: Publish NuGet
-    if: ${{ inputs.disablePublish == false && github.event_name == 'push' && github.actor != 'dependabot[bot]' }}
+    if: ${{ !cancelled() && !failure() && inputs.disablePublish == false && github.event_name == 'push' && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/step-dotnet-publish-nuget.yml
     needs:
       - build
@@ -165,7 +165,7 @@ jobs:
 
   release:
     name: Release
-    if: ${{ inputs.disablePublish == false && github.event_name == 'push' && github.actor != 'dependabot[bot]' }}
+    if: ${{ !cancelled() && !failure() && inputs.disablePublish == false && github.event_name == 'push' && github.actor != 'dependabot[bot]' }}
     needs:
       - version
       - build
