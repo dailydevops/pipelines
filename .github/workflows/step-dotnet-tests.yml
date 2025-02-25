@@ -123,7 +123,7 @@ jobs:
 
     - name: Test
       id: test
-      uses: nick-fields/retry@v3.0.1
+      uses: nick-fields/retry@v3.0.2
       with:
         timeout_minutes: ${{ inputs.retry-timeout || 15 }}
         max_attempts: ${{ inputs.retry-max-attempts || 1 }}
