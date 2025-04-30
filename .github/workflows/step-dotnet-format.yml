@@ -50,4 +50,4 @@ jobs:
 
     - name: Linting solution
       run: |
-        dotnet csharpier check .
+        csharpier check .
