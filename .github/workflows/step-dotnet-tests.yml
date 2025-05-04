@@ -113,7 +113,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: pwsh
       run: |
-        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/*.opencover.xml" /v:"${{ inputs.solution-version }}"
+        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="**/*.opencover.xml" /v:"${{ inputs.solution-version }}"
 
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
