@@ -142,7 +142,8 @@ jobs:
         dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Update codecov
-      uses: codecov/codecov-action@v5.4.2
+      # Temporary workaround for Codecov Action issue: https://github.com/codecov/codecov-action/issues/1735
+      uses: codecov/codecov-action@v3
       if: ${{ env.codecov_token != '' && (success() || steps.test.conclusion == 'failure' || steps.sonar.conclusion == 'skipped' ) }}
       with:
         token: ${{ env.codecov_token }}
