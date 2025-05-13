@@ -143,7 +143,7 @@ jobs:
 
     - name: Update codecov
       # Temporary workaround for Codecov Action issue: https://github.com/codecov/codecov-action/issues/1735
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       if: ${{ env.codecov_token != '' && (success() || steps.test.conclusion == 'failure' || steps.sonar.conclusion == 'skipped' ) }}
       with:
         token: ${{ env.codecov_token }}
