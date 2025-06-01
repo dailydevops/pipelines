@@ -20,7 +20,7 @@ on:
       dotnet-logging:
         required: false
         type: string
-        default: quiet
+        default: minimal
       dotnet-version:
         required: false
         type: string
@@ -91,7 +91,7 @@ jobs:
     if: ${{ inputs.disableCodeFormat == false }}
     uses: ./.github/workflows/step-dotnet-format.yml
     with:
-      dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
@@ -104,7 +104,7 @@ jobs:
     if: ${{ inputs.disableCodeQL == false }}
     uses: ./.github/workflows/step-dotnet-codeql.yml
     with:
-      dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
@@ -120,7 +120,7 @@ jobs:
       enableSonarQube: ${{ inputs.enableSonarQube || false }}
       enableCleanUpDockerDocker: ${{ inputs.enableCleanUpDockerDocker || false }}
       disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
-      dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-tests || inputs.runs-on-build || 'ubuntu-latest' }}
@@ -140,7 +140,7 @@ jobs:
       - codeql
     with:
       disablePublish: ${{ inputs.disablePublish || false }}
-      dotnet-logging: ${{ inputs.dotnet-logging || 'quiet' }}
+      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
       runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
