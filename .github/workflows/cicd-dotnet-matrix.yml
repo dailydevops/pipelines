@@ -17,6 +17,18 @@ on:
         required: false
         type: boolean
         default: false
+      disableTestsOnLinux:
+        required: false
+        type: boolean
+        default: false
+      disableTestsOnMacOs:
+        required: false
+        type: boolean
+        default: false
+      disableTestsOnWindows:
+        required: false
+        type: boolean
+        default: false
       dotnet-logging:
         required: false
         type: string
@@ -61,7 +73,7 @@ on:
         required: false
 
 concurrency:
-  group: ${{ github.workflow_ref }}@${{ github.ref }}-matrix
+  group: ${{ github.workflow_ref }}@${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -115,6 +127,21 @@ jobs:
     name: Tests
     needs:
       - version
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+        exclude:
+          - os: macos-latest
+            if: ${{ inputs.disableTestsOnMacOs }}
+          - os: ubuntu-latest
+            if: ${{ inputs.disableTestsOnLinux }}
+          - os: windows-latest
+            if: ${{ inputs.disableTestsOnWindows }}
+
     uses: ./.github/workflows/step-dotnet-tests.yml
     with:
       enableSonarQube: ${{ inputs.enableSonarQube || false }}
@@ -123,7 +150,7 @@ jobs:
       dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
       dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
-      runs-on: ${{ inputs.runs-on-tests || inputs.runs-on-build || 'ubuntu-latest' }}
+      runs-on: ${{ matrix.os }}
       solution: ${{ inputs.solution }}
       solution-version: ${{ needs.version.outputs.solution-version }}
       retry-max-attempts: ${{ inputs.retry-max-attempts || 3 }}

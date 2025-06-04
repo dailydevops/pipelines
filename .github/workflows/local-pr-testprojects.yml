@@ -7,7 +7,7 @@ on:
 jobs:
   all:
     name: Build & Tests
-    uses: ./.github/workflows/cicd-dotnet.yml
+    uses: ./.github/workflows/cicd-dotnet-matrix.yml
     with:
       enableCleanUpDockerDocker: true
       enableSonarQube: false
@@ -15,5 +15,5 @@ jobs:
       dotnet-version: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       dotnet-quality: ${{ vars.NE_DOTNET_QUALITY }}
       solution: ./testprojects/HealthChecks.sln
-      retry-max-attempts: 3
+      retry-max-attempts: 0
     secrets: inherit
