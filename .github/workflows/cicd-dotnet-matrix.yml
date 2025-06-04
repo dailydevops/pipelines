@@ -135,12 +135,9 @@ jobs:
           - ubuntu-latest
           - windows-latest
         exclude:
-          - os: macos-latest
-            if: ${{ inputs.disableTestsOnMacOs }}
-          - os: ubuntu-latest
-            if: ${{ inputs.disableTestsOnLinux }}
-          - os: windows-latest
-            if: ${{ inputs.disableTestsOnWindows }}
+          - os: ${{ inputs.disableTestsOnMacOs && 'macos-latest' }}
+          - os: ${{ inputs.disableTestsOnLinux && 'ubuntu-latest' }}
+          - os: ${{ inputs.disableTestsOnWindows && 'windows-latest' }}
 
     uses: ./.github/workflows/step-dotnet-tests.yml
     with:

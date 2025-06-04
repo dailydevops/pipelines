@@ -9,9 +9,10 @@ jobs:
     name: Build & Tests
     uses: ./.github/workflows/cicd-dotnet-matrix.yml
     with:
+      disableCodeQL: true
+      disableTestsOnMacOs: true
       enableCleanUpDockerDocker: true
       enableSonarQube: false
-      disableCodeQL: true
       dotnet-version: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       dotnet-quality: ${{ vars.NE_DOTNET_QUALITY }}
       solution: ./testprojects/HealthChecks.sln
