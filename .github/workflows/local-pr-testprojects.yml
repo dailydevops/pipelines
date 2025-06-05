@@ -10,7 +10,6 @@ jobs:
     uses: ./.github/workflows/cicd-dotnet-matrix.yml
     with:
       disableCodeQL: true
-      disableTestsOnMacOs: true
       enableCleanUpDockerDocker: true
       enableSonarQube: false
       dotnet-version: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
