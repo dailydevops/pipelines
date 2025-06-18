@@ -1,4 +1,4 @@
-name: testproject/healthchecks
+name: testproject/archiduct
 
 on:
   pull_request:
