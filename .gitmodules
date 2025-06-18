@@ -1,3 +1,0 @@
-[submodule "testprojects"]
-	path = testprojects
-	url = https://github.com/dailydevops/healthchecks.git
