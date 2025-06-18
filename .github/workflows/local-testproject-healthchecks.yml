@@ -1,4 +1,4 @@
-name: Run PR against `testproject/healthchecks`
+name: Build & Tests - `testproject/healthchecks`
 
 on:
   pull_request:
@@ -7,7 +7,6 @@ on:
 
 jobs:
   all:
-    name: Build & Tests - `testproject/healthchecks`
     uses: ./.github/workflows/build-dotnet-single.yml
     with:
       disableCodeQL: true
