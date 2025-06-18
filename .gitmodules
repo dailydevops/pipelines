@@ -7,3 +7,6 @@
 [submodule "testprojects/archiduct"]
 	path = testprojects/archiduct
 	url = https://github.com/dailydevops/archiduct.git
+[submodule "testprojects/hosting.winforms"]
+	path = testprojects/hosting.winforms
+	url = https://github.com/dailydevops/extensions.hosting.winforms.git
