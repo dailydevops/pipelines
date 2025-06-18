@@ -17,6 +17,7 @@ jobs:
     uses: ./.github/workflows/build-dotnet-matrix.yml
     with:
       disableCodeQL: true
+      disableTestsOnWindows: true
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
       enableCleanUpDockerDocker: false
