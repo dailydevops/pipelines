@@ -1,0 +1,9 @@
+[submodule "testprojects"]
+	path = testprojects
+	url = https://github.com/dailydevops/healthchecks.git
+[submodule "testprojects/healthchecks"]
+	path = testprojects/healthchecks
+	url = https://github.com/dailydevops/healthchecks.git
+[submodule "testprojects/archiduct"]
+	path = testprojects/archiduct
+	url = https://github.com/dailydevops/archiduct.git
