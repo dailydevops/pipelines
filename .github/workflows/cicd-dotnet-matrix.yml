@@ -41,10 +41,6 @@ on:
         required: false
         type: string
         default: ga
-      enableSonarQube:
-        required: false
-        type: boolean
-        default: false
       enableCleanUpDockerDocker:
         required: false
         type: boolean
@@ -53,21 +49,9 @@ on:
         required: false
         type: string
         default: 'ubuntu-latest'
-      runs-on-tests:
-        required: false
-        type: string
-        default: 'ubuntu-latest'
       solution:
         required: true
         type: string
-      retry-max-attempts:
-        required: false
-        type: number
-        default: 1
-      retry-timeout:
-        required: false
-        type: number
-        default: 15
     secrets:
       FETCH_TOKEN:
         required: false
