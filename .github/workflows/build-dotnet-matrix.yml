@@ -59,7 +59,7 @@ on:
         required: false
 
 concurrency:
-  group: ${{ github.workflow_ref }}@${{ github.ref }}-build-single
+  group: ${{ github.workflow_ref }}@${{ github.ref }}-build-matrix
   cancel-in-progress: true
 
 env:
