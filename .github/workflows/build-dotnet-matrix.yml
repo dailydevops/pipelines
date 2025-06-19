@@ -43,6 +43,10 @@ on:
         required: false
         type: boolean
         default: false
+      failFast:
+        required: false
+        type: boolean
+        default: true
       runsOnBuild:
         required: false
         type: string
@@ -118,7 +122,7 @@ jobs:
       - commitlinter
       - version
     strategy:
-      fail-fast: true
+      fail-fast: ${{ inputs.failFast || true }}
       matrix:
         os:
           - windows-latest
