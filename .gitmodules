@@ -1,6 +1,3 @@
-[submodule "testprojects"]
-	path = testprojects
-	url = https://github.com/dailydevops/healthchecks.git
 [submodule "testprojects/healthchecks"]
 	path = testprojects/healthchecks
 	url = https://github.com/dailydevops/healthchecks.git
