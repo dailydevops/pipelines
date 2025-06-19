@@ -94,52 +94,16 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
-    - name: Setup JDK 17
-      if: ${{ inputs.enableSonarQube == true }}
-      uses: actions/setup-java@v4.7.1
-      with:
-        java-version: 17
-        distribution: 'zulu'
-
-    - name: Install SonarCloud scanner
-      if: ${{ inputs.enableSonarQube == true }}
-      shell: pwsh
-      run: dotnet tool install --global dotnet-sonarscanner
-
-    - name: Start SonarQube Analysis
-      if: ${{ inputs.enableSonarQube == true }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: pwsh
-      run: |
-        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="**/*.opencover.xml" /v:"${{ inputs.solution-version }}"
-
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Build
-      run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'quiet' }} --no-restore /p:GeneratePackageOnBuild=false
+      run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-restore /p:GeneratePackageOnBuild=false
 
     - name: Test
       id: test
-      uses: nick-fields/retry@v3.0.2
-      with:
-        timeout_minutes: ${{ inputs.retry-timeout || 15 }}
-        max_attempts: ${{ inputs.retry-max-attempts || 1 }}
-        shell: pwsh
-        command: |
-          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-build --no-restore --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
-
-    - name: Stop SonarQube Analysis
-      if: ${{ inputs.enableSonarQube == true && (success() || steps.test.conclusion == 'failure') }}
-      id: sonar
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: pwsh
       run: |
-        dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-build --no-restore --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
 
     - name: Update codecov
       # Temporary workaround for Codecov Action issue: https://github.com/codecov/codecov-action/issues/1735
@@ -153,7 +117,7 @@ jobs:
       uses: actions/upload-artifact@v4.6.2
       if: ${{ inputs.disableCoverageUpload == false }}
       with:
-        name: "coverage"
+        name: coverage-${{ inputs.runs-on || 'ubuntu-latest' }}
         path: |
           **/TestResults/**/*.opencover.xml
 
@@ -161,7 +125,7 @@ jobs:
       uses: actions/upload-artifact@v4.6.2
       if: ${{ always() }}
       with:
-        name: "logs"
+        name: logs-${{ inputs.runs-on || 'ubuntu-latest' }}
         if-no-files-found: ignore
         path: |
           **/TestResults/**/*.log

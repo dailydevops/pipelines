@@ -1,3 +1,9 @@
-[submodule "testprojects"]
-	path = testprojects
+[submodule "testprojects/healthchecks"]
+	path = testprojects/healthchecks
 	url = https://github.com/dailydevops/healthchecks.git
+[submodule "testprojects/archiduct"]
+	path = testprojects/archiduct
+	url = https://github.com/dailydevops/archiduct.git
+[submodule "testprojects/hosting.winforms"]
+	path = testprojects/hosting.winforms
+	url = https://github.com/dailydevops/extensions.hosting.winforms.git

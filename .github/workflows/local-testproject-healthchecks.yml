@@ -1,0 +1,24 @@
+name: testproject/healthchecks
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  security-events: write
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  all:
+    name: Build & Tests
+    uses: ./.github/workflows/build-dotnet-single.yml
+    with:
+      disableCodeQL: true
+      dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
+      dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
+      enableCleanUpDockerDocker: true
+      solution: ./testprojects/healthchecks/HealthChecks.sln
+    secrets: inherit

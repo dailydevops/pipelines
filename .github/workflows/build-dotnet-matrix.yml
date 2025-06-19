@@ -1,0 +1,168 @@
+on:
+  workflow_call:
+    inputs:
+      disableCodeFormat:
+        required: false
+        type: boolean
+        default: false
+      disableCodeQL:
+        required: false
+        type: boolean
+        default: false
+      disableCoverageUpload:
+        required: false
+        type: boolean
+        default: false
+      disableTestsOnLinux:
+        required: false
+        type: boolean
+        default: false
+      disableTestsOnMacOs:
+        required: false
+        type: boolean
+        default: false
+      disableTestsOnWindows:
+        required: false
+        type: boolean
+        default: false
+      dotnetLogging:
+        required: false
+        type: string
+        default: minimal
+      dotnetVersion:
+        required: false
+        type: string
+        default: |
+          8.x
+          9.x
+      dotnetQuality:
+        required: false
+        type: string
+        default: ga
+      enableCleanUpDockerDocker:
+        required: false
+        type: boolean
+        default: false
+      failFast:
+        required: false
+        type: boolean
+        default: true
+      runsOnBuild:
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      solution:
+        required: true
+        type: string
+    secrets:
+      FETCH_TOKEN:
+        required: false
+
+concurrency:
+  group: ${{ github.workflow_ref }}@${{ github.ref }}-build-matrix
+  cancel-in-progress: true
+
+env:
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  commitlinter:
+    name: Commit Linter
+    uses: ./.github/workflows/step-node-commitlint.yml
+    secrets: inherit
+
+  version:
+    name: Version Management
+    uses: ./.github/workflows/step-dotnet-version.yml
+    with:
+      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
+    secrets: inherit
+
+  format:
+    name: Code Formatting
+    if: ${{ !inputs.disableCodeFormat }}
+    uses: ./.github/workflows/step-dotnet-format.yml
+    needs:
+      - commitlinter
+    with:
+      dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
+      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
+      runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
+    secrets: inherit
+
+  codeql:
+    name: CodeQL Analysis
+    if: ${{ !inputs.disableCodeQL }}
+    uses: ./.github/workflows/step-dotnet-codeql.yml
+    needs:
+      - commitlinter
+    with:
+      dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
+      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
+      runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
+      solution: ${{ inputs.solution }}
+    secrets: inherit
+
+  tests:
+    name: Run Tests
+    uses: ./.github/workflows/step-dotnet-tests.yml
+    needs:
+      - commitlinter
+      - version
+    strategy:
+      fail-fast: ${{ inputs.failFast || true }}
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+          - macos-latest
+        exclude:
+          - os: ${{ inputs.disableTestsOnMacOs && 'macos-latest' }}
+          - os: ${{ inputs.disableTestsOnLinux && 'ubuntu-latest' }}
+          - os: ${{ inputs.disableTestsOnWindows && 'windows-latest' }}
+    with:
+      disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
+      dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
+      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
+      enableCleanUpDockerDocker: ${{ inputs.enableCleanUpDockerDocker || false }}
+      runs-on: ${{ matrix.os }}
+      solution: ${{ inputs.solution }}
+      solution-version: ${{ needs.version.outputs.solution-version }}
+    secrets: inherit
+
+  build:
+    name: Build Solution
+    if: ${{ !cancelled() && !failure() }}
+    uses: ./.github/workflows/step-dotnet-build.yml
+    needs:
+      - tests
+      - format
+      - codeql
+    with:
+      dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
+      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
+      runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
+      solution: ${{ inputs.solution }}
+    secrets: inherit
+
+  dependabot:
+    name: Dependabot Merge
+    if: ${{ !cancelled() && !failure() && github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
+    uses: ./.github/workflows/step-dependabot-merge.yml
+    needs:
+      - build
+    secrets: inherit
