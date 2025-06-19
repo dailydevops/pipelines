@@ -1,0 +1,110 @@
+on:
+  workflow_call:
+    inputs:
+      disableCodeFormat:
+        required: false
+        type: boolean
+        default: false
+      disableCodeQL:
+        required: false
+        type: boolean
+        default: false
+      disableCoverageUpload:
+        required: false
+        type: boolean
+        default: false
+      dotnetLogging:
+        required: false
+        type: string
+        default: minimal
+      dotnetVersion:
+        required: false
+        type: string
+        default: |
+          8.x
+          9.x
+      dotnetQuality:
+        required: false
+        type: string
+        default: ga
+      enableCleanUpDockerDocker:
+        required: false
+        type: boolean
+        default: false
+      runsOnBuild:
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      solution:
+        required: true
+        type: string
+    secrets:
+      FETCH_TOKEN:
+        required: false
+
+concurrency:
+  group: ${{ github.workflow_ref }}@${{ github.ref }}-build-fast
+  cancel-in-progress: true
+
+env:
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  commitlinter:
+    name: Commit Linter
+    uses: ./.github/workflows/step-node-commitlint.yml
+    secrets: inherit
+
+  build:
+    name: Build and Test
+    needs:
+      - commitlinter
+    runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          token: ${{ secrets.FETCH_TOKEN || github.token }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.3.1
+        with:
+          dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+          dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
+
+      - name: NuGet cache
+        uses: actions/cache@v4.2.3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ inputs.solution }} --verbosity ${{ inputs.dotnetLogging || 'minimal' }}
+
+      - name: Build solution
+        run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnetLogging || 'minimal' }} -c Release --no-restore /p:GeneratePackageOnBuild=false
+
+      - name: Test
+        run: |
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnetLogging || 'minimal' }} --no-build --no-restore
+
+  dependabot:
+    name: Dependabot Merge
+    if: ${{ !cancelled() && !failure() && github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
+    uses: ./.github/workflows/step-dependabot-merge.yml
+    needs:
+      - build
+    secrets: inherit
