@@ -98,12 +98,12 @@ jobs:
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Build
-      run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'quiet' }} --no-restore /p:GeneratePackageOnBuild=false
+      run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-restore /p:GeneratePackageOnBuild=false
 
     - name: Test
       id: test
       run: |
-        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging }} --no-build --no-restore --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
+        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-build --no-restore --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
 
     - name: Update codecov
       # Temporary workaround for Codecov Action issue: https://github.com/codecov/codecov-action/issues/1735

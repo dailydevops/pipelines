@@ -71,107 +71,13 @@ env:
   DOTNET_NOLOGO: true
 
 jobs:
-  commitlinter:
-    name: Lint commit messages
-    uses: ./.github/workflows/step-node-commitlint.yml
-    secrets: inherit
+  fail-on-purpose:
+    name: Fail on purpose
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
+    steps:
 
-  version:
-    name: Version
-    uses: ./.github/workflows/step-dotnet-version.yml
-    with:
-      dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
-    secrets: inherit
-
-  format:
-    name: Format
-    needs:
-      - commitlinter
-    if: ${{ inputs.disableCodeFormat == false }}
-    uses: ./.github/workflows/step-dotnet-format.yml
-    with:
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
-      runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
-    secrets: inherit
-
-  codeql:
-    name: CodeQL
-    needs:
-      - commitlinter
-    if: ${{ inputs.disableCodeQL == false }}
-    uses: ./.github/workflows/step-dotnet-codeql.yml
-    with:
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
-      runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
-      solution: ${{ inputs.solution }}
-    secrets: inherit
-
-  tests:
-    name: Tests
-    needs:
-      - version
-    uses: ./.github/workflows/step-dotnet-tests.yml
-    with:
-      enableSonarQube: ${{ inputs.enableSonarQube || false }}
-      enableCleanUpDockerDocker: ${{ inputs.enableCleanUpDockerDocker || false }}
-      disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
-      runs-on: ${{ inputs.runs-on-tests || inputs.runs-on-build || 'ubuntu-latest' }}
-      solution: ${{ inputs.solution }}
-      solution-version: ${{ needs.version.outputs.solution-version }}
-      retry-max-attempts: ${{ inputs.retry-max-attempts || 3 }}
-      retry-timeout: ${{ inputs.retry-timeout || 15 }}
-    secrets: inherit
-
-  build:
-    name: Build
-    if: ${{ !cancelled() && !failure() }}
-    uses: ./.github/workflows/step-dotnet-build.yml
-    needs:
-      - tests
-      - format
-      - codeql
-    with:
-      disablePublish: ${{ inputs.disablePublish || false }}
-      dotnet-logging: ${{ inputs.dotnet-logging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnet-version || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnet-quality || 'ga' }}
-      runs-on: ${{ inputs.runs-on-build || 'ubuntu-latest' }}
-      solution: ${{ inputs.solution }}
-    secrets: inherit
-
-  dependabot-merge:
-    name: Dependabot Merge
-    if: ${{ !cancelled() && !failure() && github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
-    uses: ./.github/workflows/step-dependabot-merge.yml
-    needs:
-      - build
-    secrets: inherit
-
-  publish-nuget:
-    name: Publish NuGet
-    if: ${{ !cancelled() && !failure() && inputs.disablePublish == false && github.event_name != 'pull_request' && github.actor != 'dependabot[bot]' }}
-    uses: ./.github/workflows/step-dotnet-publish-nuget.yml
-    needs:
-      - build
-    secrets: inherit
-
-  release:
-    name: Release
-    if: ${{ !cancelled() && !failure() && inputs.disablePublish == false && github.event_name != 'pull_request' && github.actor != 'dependabot[bot]' }}
-    needs:
-      - version
-      - build
-      - publish-nuget
-    uses: ./.github/workflows/step-dotnet-draft-release.yml
-    with:
-      runs-on: ${{ inputs.runs-on-tests || 'ubuntu-latest' }}
-      solution-version: ${{ needs.version.outputs.solution-version }}
-    secrets: inherit
+      - name: Fail on purpose
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            core.setFailed('Failing the job intentionally');
