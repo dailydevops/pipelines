@@ -64,33 +64,6 @@ jobs:
 
 This step has an _optional_ secret `FETCH_TOKEN` that can be used to fetch the dependencies from the private repositories. The secret should contain the GitHub token that has the permissions to fetch the dependencies. If the secret is not set, the dependencies will be fetched using the default `{{ github.token }}`.
 
-### `step-dotnet-codeql.yml`
-
-This template will analyze the application using the CodeQL and upload the analysis results to the GitHub as an artifact `codeql`.
-
-To use this template, you need to add the following code to your workflow file:
-
-```yaml
-jobs:
-  codeql:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: dailydevops/pipelines/.github/workflows/step-dotnet-codeql.yml@0.12.16
-```
-
-#### Parameters
-
-| Parameter        | Description                               | Required | Default         |
-| ---------------- | ----------------------------------------- | :------: | --------------- |
-| `dotnet-version` | The version of the dotnet SDK to use.     |    ❌    | `8.x`           |
-| `dotnet-quality` | The quality of the dotnet SDK to use.     |    ❌    | `ga`            |
-| `runs-on`        | The runner to use.                        |    ❌    | `ubuntu-latest` |
-| `solution`       | The path to the solution or project file. |    ✅    |                 |
-
-#### Secrets
-
-This step has an _optional_ secret `FETCH_TOKEN` that can be used to fetch the dependencies from the private repositories. The secret should contain the GitHub token that has the permissions to fetch the dependencies. If the secret is not set, the dependencies will be fetched using the default `{{ github.token }}`.
-
 ### `step-dotnet-draft-release.yml`
 
 ### `step-dotnet-format.yml`

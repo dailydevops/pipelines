@@ -17,7 +17,6 @@ jobs:
     uses: ./.github/workflows/build-dotnet-single.yml
     with:
       disableCodeFormat: true
-      disableCodeQL: true
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
       enableCleanUpDockerDocker: true

@@ -5,10 +5,6 @@ on:
         required: false
         type: boolean
         default: false
-      disableCodeQL:
-        required: false
-        type: boolean
-        default: false
       disableCoverageUpload:
         required: false
         type: boolean
@@ -85,20 +81,6 @@ jobs:
       runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
     secrets: inherit
 
-  codeql:
-    name: CodeQL Analysis
-    if: ${{ !inputs.disableCodeQL }}
-    uses: ./.github/workflows/step-dotnet-codeql.yml
-    needs:
-      - commitlinter
-    with:
-      dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
-      runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
-      solution: ${{ inputs.solution }}
-    secrets: inherit
-
   tests:
     name: Run Tests
     uses: ./.github/workflows/step-dotnet-tests.yml
@@ -123,7 +105,6 @@ jobs:
     needs:
       - tests
       - format
-      - codeql
     with:
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
