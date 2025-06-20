@@ -19,5 +19,5 @@ jobs:
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
       enableCleanUpDockerDocker: true
-      solution: ./testprojects/healthchecks/HealthChecks.sln
+      solution: ./testprojects/healthchecks/HealthChecks.slnx
     secrets: inherit
