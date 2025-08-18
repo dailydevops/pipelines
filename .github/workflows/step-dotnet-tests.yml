@@ -106,8 +106,7 @@ jobs:
         dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-build --no-restore --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
 
     - name: Update codecov
-      # Temporary workaround for Codecov Action issue: https://github.com/codecov/codecov-action/issues/1735
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v5.4.3
       if: ${{ env.codecov_token != '' && (success() || steps.test.conclusion == 'failure' || steps.sonar.conclusion == 'skipped' ) }}
       with:
         token: ${{ env.codecov_token }}
