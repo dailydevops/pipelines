@@ -103,7 +103,7 @@ jobs:
 
   dependabot:
     name: Dependabot Merge
-    if: ${{ !cancelled() && !failure() && github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' && input.disableDependaMerge != true }}
+    if: ${{ !cancelled() && !failure() && github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' && inputs.disableDependaMerge != true }}
     uses: ./.github/workflows/step-dependabot-merge.yml
     needs:
       - build
