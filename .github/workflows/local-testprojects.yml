@@ -1,0 +1,59 @@
+name: testprojects
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  security-events: write
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  archiduct:
+    name: Archiduct
+    uses: ./.github/workflows/build-dotnet-matrix.yml
+    with:
+      disableDependaMerge: true
+      disableTestsOnWindows: true
+      dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
+      dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
+      enableCleanUpDockerDocker: false
+      solution: ./testprojects/archiduct/ArchiDuct.sln
+    secrets: inherit
+
+  healthchecks:
+    name: HealthChecks
+    uses: ./.github/workflows/build-dotnet-single.yml
+    with:
+      disableDependaMerge: true
+      dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
+      dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
+      enableCleanUpDockerDocker: true
+      solution: ./testprojects/healthchecks/HealthChecks.slnx
+    secrets: inherit
+
+  hostingwinforms:
+    name: Hosting.WinForms
+    uses: ./.github/workflows/build-dotnet-single.yml
+    with:
+      disableCodeFormat: true
+      disableDependaMerge: true
+      dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
+      dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
+      enableCleanUpDockerDocker: true
+      runsOnBuild: windows-latest
+      solution: ./testprojects/hosting.winforms/Extensions.Hosting.WinForms.sln
+    secrets: inherit
+
+  dependabot:
+    name: Dependabot Merge
+    if: ${{ github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
+    uses: ./.github/workflows/step-dependabot-merge.yml
+    needs:
+      - archiduct
+      - healthchecks
+      - hostingwinforms
+    secrets: inherit
