@@ -114,11 +114,7 @@ jobs:
 
     - name: Upload coverage into summary
       run: |
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          cat $GITHUB_WORKSPACE\coveragereports\SummaryGithub.md >> $GITHUB_STEP_SUMMARY
-        else
-          cat $GITHUB_WORKSPACE/coveragereports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
-        fi
+        cat $GITHUB_WORKSPACE/coveragereports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
     - name: Update codecov
       uses: codecov/codecov-action@v5.4.3
