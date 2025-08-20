@@ -1,7 +1,5 @@
-permissions:
-  contents: write
-  pull-requests: write
 name: Update copyright year in license file
+
 permissions:
   contents: write
   pull-requests: write
