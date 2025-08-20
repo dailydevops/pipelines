@@ -1,0 +1,23 @@
+name: Test Validation and Error Handling
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-invalid-run-id:
+    name: Test Invalid Run ID Handling
+    uses: ./.github/workflows/step-dotnet-publish-nuget-with-approval.yml
+    with:
+      source-workflow-run-id: "999999999"  # Non-existent run ID
+      environment: "test-environment"
+    secrets:
+      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN || 'dummy-token-for-test' }}
+      
+  test-missing-workflow:
+    name: Test Missing Workflow Handling  
+    uses: ./.github/workflows/step-dotnet-publish-nuget-with-approval.yml
+    with:
+      source-workflow-name: "non-existent-workflow.yml"
+      environment: "test-environment"
+    secrets:
+      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN || 'dummy-token-for-test' }}

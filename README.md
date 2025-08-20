@@ -112,6 +112,8 @@ jobs:
 - The source workflow must have completed successfully on the main branch
 - The source workflow must produce artifacts with NuGet packages
 
+For detailed instructions on setting up the GitHub environment for manual approval, see [Manual Approval Setup Guide](./docs/MANUAL_APPROVAL_SETUP.md).
+
 ### `step-dotnet-tests.yml`
 
 ### `step-dotnet-version.yml`
