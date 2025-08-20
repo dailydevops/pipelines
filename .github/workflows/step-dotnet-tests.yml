@@ -113,7 +113,12 @@ jobs:
         reporttypes: 'Cobertura;MarkdownSummaryGithub'
 
     - name: Upload coverage into summary
-      run: cat $GITHUB_WORKSPACE/coveragereports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+      run: |
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          cat $GITHUB_WORKSPACE\coveragereports\SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+        else
+          cat $GITHUB_WORKSPACE/coveragereports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+        fi
 
     - name: Update codecov
       uses: codecov/codecov-action@v5.4.3
@@ -125,7 +130,7 @@ jobs:
 
     - name: Upload ReportGenerator
       uses: actions/upload-artifact@v4.6.2
-      if: ${{ inputs.disableCoverageUpload == false }}
+      if: always()
       with:
         name: reportgenerator-${{ inputs.runs-on || 'ubuntu-latest' }}
         path: |
