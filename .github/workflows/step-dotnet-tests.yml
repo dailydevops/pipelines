@@ -112,9 +112,11 @@ jobs:
         targetdir: '${{ github.workspace }}/coveragereports'
         reporttypes: 'Cobertura;MarkdownSummaryGithub'
 
-    # - name: Upload coverage into summary
-    #   run: |
-    #     cat $GITHUB_WORKSPACE/coveragereports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+    - name: Upload coverage into summary
+      # Only on non windows runners
+      if: ${{ runner.os != 'Windows' }}
+      run: |
+        cat $GITHUB_WORKSPACE/coveragereports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
     - name: Update codecov
       uses: codecov/codecov-action@v5.4.3
@@ -122,7 +124,7 @@ jobs:
       with:
         token: ${{ env.codecov_token }}
         fail_ci_if_error: true
-        files: ${{ github.workspace }}/coveragereports/**/*.xml
+        files: ${{ github.workspace }}/coveragereports/Cobertura.xml
 
     - name: Upload ReportGenerator
       uses: actions/upload-artifact@v4.6.2
