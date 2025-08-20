@@ -94,7 +94,6 @@ jobs:
 | Parameter              | Description                                                                | Required | Default              |
 | ---------------------- | -------------------------------------------------------------------------- | :------: | -------------------- |
 | `source-repo`          | Repository containing the workflow run with artifacts.                    |    ❌    | `${{ github.repository }}` |
-| `source-workflow-run-id` | Specific workflow run ID to download artifacts from.                    |    ❌    |                      |
 | `source-workflow-name` | Name of the workflow to check for successful builds.                      |    ❌    | `ci-dotnet.yml`      |
 | `artifact-name`        | Name of the artifact to download.                                         |    ❌    | `release-packages`   |
 | `environment`          | Environment name for manual approval (must be configured in repository).  |    ❌    | `nuget-production`   |
