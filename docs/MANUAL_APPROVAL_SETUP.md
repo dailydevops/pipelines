@@ -1,6 +1,6 @@
 # Setting Up Manual Approval for NuGet Publishing
 
-This document explains how to configure GitHub environments for manual approval when using the `step-dotnet-publish-nuget-with-approval.yml` template.
+This document explains how to configure GitHub environments for manual approval when using the `publish-nuget.yml` template.
 
 ## Prerequisites
 
@@ -45,7 +45,7 @@ Once the environment is configured, use the template like this:
 ```yaml
 jobs:
   publish-nuget:
-    uses: dailydevops/pipelines/.github/workflows/step-dotnet-publish-nuget-with-approval.yml@main
+    uses: dailydevops/pipelines/.github/workflows/publish-nuget.yml@main
     with:
       environment: "nuget-production"  # Your configured environment name
     secrets:

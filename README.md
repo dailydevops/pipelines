@@ -70,7 +70,7 @@ This step has an _optional_ secret `FETCH_TOKEN` that can be used to fetch the d
 
 ### `step-dotnet-publish-nuget.yml`
 
-### `step-dotnet-publish-nuget-with-approval.yml`
+### `publish-nuget.yml`
 
 This template is used to publish .NET NuGet packages with manual approval and cross-workflow artifact support. The template downloads artifacts from a specified pipeline run, verifies the last successful build on the main branch, and requires manual approval before publishing.
 
@@ -81,7 +81,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: dailydevops/pipelines/.github/workflows/step-dotnet-publish-nuget-with-approval.yml@main
+      - uses: dailydevops/pipelines/.github/workflows/publish-nuget.yml@main
         with:
           source-workflow-name: "ci-dotnet.yml"
           environment: "nuget-production"
