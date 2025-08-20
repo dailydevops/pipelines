@@ -1,5 +1,9 @@
 on:
   workflow_call:
+    inputs:
+      solution:
+        required: true
+        type: string
     secrets:
       NUGET_TOKEN:
         required: true
@@ -14,7 +18,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v5.0.0
       with:
-        name: release-packages
+        name: release-packages-${{ inputs.solution }}
         path: packages
 
     - name: Push packages to nuget.org/profiles/NetEvolve
