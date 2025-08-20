@@ -1,0 +1,22 @@
+name: Example NuGet Publish with Approval
+
+on:
+  workflow_dispatch:
+    inputs:
+      workflow-run-id:
+        description: 'Specific workflow run ID to publish from (optional)'
+        required: false
+        type: string
+
+jobs:
+  publish-nuget:
+    name: Publish NuGet with Approval
+    uses: ./.github/workflows/step-dotnet-publish-nuget-with-approval.yml
+    with:
+      source-workflow-name: "ci-dotnet.yml"
+      source-workflow-run-id: ${{ inputs.workflow-run-id }}
+      environment: "nuget-production"
+      artifact-name: "release-packages"
+    secrets:
+      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

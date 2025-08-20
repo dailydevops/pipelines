@@ -70,6 +70,48 @@ This step has an _optional_ secret `FETCH_TOKEN` that can be used to fetch the d
 
 ### `step-dotnet-publish-nuget.yml`
 
+### `step-dotnet-publish-nuget-with-approval.yml`
+
+This template is used to publish .NET NuGet packages with manual approval and cross-workflow artifact support. The template downloads artifacts from a specified pipeline run, verifies the last successful build on the main branch, and requires manual approval before publishing.
+
+To use this template, you need to add the following code to your workflow file:
+
+```yaml
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dailydevops/pipelines/.github/workflows/step-dotnet-publish-nuget-with-approval.yml@main
+        with:
+          source-workflow-name: "ci-dotnet.yml"
+          environment: "nuget-production"
+        secrets:
+          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+```
+
+#### Parameters
+
+| Parameter              | Description                                                                | Required | Default              |
+| ---------------------- | -------------------------------------------------------------------------- | :------: | -------------------- |
+| `source-repo`          | Repository containing the workflow run with artifacts.                    |    ❌    | `${{ github.repository }}` |
+| `source-workflow-run-id` | Specific workflow run ID to download artifacts from.                    |    ❌    |                      |
+| `source-workflow-name` | Name of the workflow to check for successful builds.                      |    ❌    | `ci-dotnet.yml`      |
+| `artifact-name`        | Name of the artifact to download.                                         |    ❌    | `release-packages`   |
+| `environment`          | Environment name for manual approval (must be configured in repository).  |    ❌    | `nuget-production`   |
+
+#### Secrets
+
+| Secret       | Description                                           | Required |
+| ------------ | ----------------------------------------------------- | :------: |
+| `NUGET_TOKEN` | NuGet API key for publishing packages to nuget.org  |    ✅    |
+| `GITHUB_TOKEN` | GitHub token for accessing workflow runs and artifacts |    ❌    |
+
+#### Prerequisites
+
+- The target repository must have a GitHub environment configured (e.g., `nuget-production`) with manual approval reviewers
+- The source workflow must have completed successfully on the main branch
+- The source workflow must produce artifacts with NuGet packages
+
 ### `step-dotnet-tests.yml`
 
 ### `step-dotnet-version.yml`
