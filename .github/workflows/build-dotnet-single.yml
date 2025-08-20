@@ -9,6 +9,10 @@ on:
         required: false
         type: boolean
         default: false
+      disableDependaMerge:
+        required: false
+        type: boolean
+        default: false
       dotnetLogging:
         required: false
         type: string
@@ -115,7 +119,7 @@ jobs:
 
   dependabot:
     name: Dependabot Merge
-    if: ${{ !cancelled() && !failure() && github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
+    if: ${{ !cancelled() && !failure() && github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' && input.disableDependaMerge != true }}
     uses: ./.github/workflows/step-dependabot-merge.yml
     needs:
       - build
