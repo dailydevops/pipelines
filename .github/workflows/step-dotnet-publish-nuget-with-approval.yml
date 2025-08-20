@@ -35,6 +35,9 @@ jobs:
   verify-build-status:
     name: Verify Build Status
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     outputs:
       workflow-run-id: ${{ steps.get-run-id.outputs.run-id }}
       workflow-conclusion: ${{ steps.get-run-id.outputs.conclusion }}
@@ -112,6 +115,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     if: ${{ needs.verify-build-status.outputs.workflow-conclusion == 'success' }}
+    permissions:
+      contents: read
+      actions: read
 
     steps:
     - name: Download Artifacts from Workflow Run
