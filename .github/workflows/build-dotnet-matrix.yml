@@ -59,7 +59,7 @@ on:
         required: false
 
 concurrency:
-  group: ${{ github.workflow_ref }}@${{ github.ref }}-build-matrix-${{ inputs.solution }}
+  group: ${{ github.workflow_ref }}@${{ github.ref }}-build-matrix-${{ hashFiles(inputs.solution) }}
   cancel-in-progress: true
 
 env:

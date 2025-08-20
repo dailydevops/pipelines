@@ -130,7 +130,7 @@ jobs:
       uses: actions/upload-artifact@v4.6.2
       if: always()
       with:
-        name: reportgenerator-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ inputs.solution }}
+        name: reportgenerator-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}
         path: |
           ${{ github.workspace }}/coveragereports/**/*.*
 
@@ -138,7 +138,7 @@ jobs:
       uses: actions/upload-artifact@v4.6.2
       if: ${{ inputs.disableCoverageUpload == false }}
       with:
-        name: coverage-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ inputs.solution }}
+        name: coverage-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}
         path: |
           **/TestResults/**/*.opencover.xml
           **/TestResults/**/*.cobertura.xml
@@ -147,7 +147,7 @@ jobs:
       uses: actions/upload-artifact@v4.6.2
       if: ${{ always() }}
       with:
-        name: logs-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ inputs.solution }}
+        name: logs-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}
         if-no-files-found: ignore
         path: |
           **/TestResults/**/*.log
