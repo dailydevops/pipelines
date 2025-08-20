@@ -1,4 +1,4 @@
-name: testproject/archiduct
+name: testprojects
 
 permissions:
   actions: read
