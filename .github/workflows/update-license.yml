@@ -1,5 +1,9 @@
 name: Update copyright year in license file
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   schedule:
     - cron: '0 6 1 1 *'
