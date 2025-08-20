@@ -112,9 +112,9 @@ jobs:
         targetdir: '${{ github.workspace }}/coveragereports'
         reporttypes: 'Cobertura;MarkdownSummaryGithub'
 
-    - name: Upload coverage into summary
-      run: |
-        cat $GITHUB_WORKSPACE/coveragereports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+    # - name: Upload coverage into summary
+    #   run: |
+    #     cat $GITHUB_WORKSPACE/coveragereports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
     - name: Update codecov
       uses: codecov/codecov-action@v5.4.3
