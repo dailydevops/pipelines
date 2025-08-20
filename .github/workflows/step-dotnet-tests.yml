@@ -103,7 +103,17 @@ jobs:
     - name: Test
       id: test
       run: |
-        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-build --no-restore --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
+        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-build --no-restore --collect:"Code Coverage;Format=cobertura,opencover" /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
+
+    - name: ReportGenerator
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.9
+      with:
+        reports: '${{ github.workspace }}/**/TestResults/**/*.cobertura.xml'
+        targetdir: '${{ github.workspace }}/coveragereports'
+        reporttypes: 'Cobertura;MarkdownSummaryGithub'
+
+    - name: Upload coverage into summary
+      run: cat $GITHUB_WORKSPACE/coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
     - name: Update codecov
       uses: codecov/codecov-action@v5.4.3
@@ -111,6 +121,15 @@ jobs:
       with:
         token: ${{ env.codecov_token }}
         fail_ci_if_error: true
+        files: ${{ github.workspace }}/coveragereports/**/*.xml
+
+    - name: Upload ReportGenerator
+      uses: actions/upload-artifact@v4.6.2
+      if: ${{ inputs.disableCoverageUpload == false }}
+      with:
+        name: reportgenerator-${{ inputs.runs-on || 'ubuntu-latest' }}
+        path: |
+          ${{ github.workspace }}/coveragereports/**/*.*
 
     - name: Upload Coverage Reports
       uses: actions/upload-artifact@v4.6.2
@@ -119,6 +138,7 @@ jobs:
         name: coverage-${{ inputs.runs-on || 'ubuntu-latest' }}
         path: |
           **/TestResults/**/*.opencover.xml
+          **/TestResults/**/*.cobertura.xml
 
     - name: Upload log files
       uses: actions/upload-artifact@v4.6.2
