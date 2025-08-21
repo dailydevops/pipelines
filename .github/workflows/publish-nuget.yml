@@ -13,7 +13,7 @@ on:
         description: "Environment name for manual approval (must be configured in repository settings)"
       runId:
         required: true
-        type: integer
+        type: number
         description: "ID of the workflow run to download artifacts from"
       workflowName:
         required: true
@@ -25,8 +25,6 @@ on:
         required: true
       WORKFLOW_PACKAGES:
         required: true
-
-if: ${{ github.event.workflow_run.conclusion == 'success' && github.actor != 'dependabot[bot]' }}
 
 concurrency:
   group: ${{ github.ref }}@${{ github.ref }}-publish-nuget
@@ -67,6 +65,6 @@ jobs:
     needs:
       - nuget
       - version
-    inputs:
+    with:
       solution-version: ${{ needs.version.outputs.solution-version }}
     secrets: inherit
