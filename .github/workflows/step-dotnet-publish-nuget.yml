@@ -31,6 +31,8 @@ jobs:
     name: Publish NuGet Packages
     runs-on: ubuntu-latest
 
+    environment: ${{ inputs.environment }}
+
     steps:
       - name: Download artifacts from `${{ inputs.workflowName }}` workflow
         uses: actions/download-artifact@v4.3.0
