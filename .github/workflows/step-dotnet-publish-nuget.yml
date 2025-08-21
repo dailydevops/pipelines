@@ -1,11 +1,29 @@
 on:
   workflow_call:
     inputs:
-      solution:
+      artifactPattern:
         required: true
         type: string
+        default: "release-packages-*"
+        description: "Pattern to match the artifact names to download"
+      environment:
+        required: true
+        type: string
+        default: "nuget-production"
+        description: "Environment name for manual approval (must be configured in repository settings)"
+      runId:
+        required: true
+        type: integer
+        description: "ID of the workflow run to download artifacts from"
+      workflowName:
+        required: true
+        type: string
+        default: "ci-dotnet.yml"
+        description: "Name of the workflow to check for successful builds"
     secrets:
       NUGET_TOKEN:
+        required: true
+      WORKFLOW_PACKAGES:
         required: true
 
 jobs:
@@ -15,11 +33,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download Artifacts
-      uses: actions/download-artifact@v5.0.0
-      with:
-        name: release-packages-${{ hashFiles(inputs.solution) }}
-        path: packages
+      - name: Download artifacts from `${{ inputs.workflowName }}` workflow
+        uses: actions/download-artifact@v4.3.0
+        with:
+          github-token: ${{ secrets.WORKFLOW_PACKAGES }}
+          merge-multiple: true
+          path: packages
+          pattern: ${{ inputs.artifactPattern }}
+          run-id: ${{ inputs.runId }}
 
-    - name: Push packages to nuget.org/profiles/NetEvolve
-      run: dotnet nuget push packages/**/*.nupkg -k ${{ secrets.NUGET_TOKEN }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Publish NuGet Package
+        run: |
+          dotnet nuget push packages/**/*.nupkg -k ${{ secrets.NUGET_TOKEN }} -s https://api.nuget.org/v3/index.json --skip-duplicate
