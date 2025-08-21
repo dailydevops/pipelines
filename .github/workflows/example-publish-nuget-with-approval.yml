@@ -1,10 +1,12 @@
 name: Example NuGet Publish with Approval
-permissions:
-  contents: read
-  packages: write
-  
+
 on:
   workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+  workflows: write
 
 jobs:
   publish-nuget:
