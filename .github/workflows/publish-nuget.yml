@@ -39,7 +39,6 @@ env:
 permissions:
   actions: read
   contents: write
-  workflows: write
 
 jobs:
   nuget:
