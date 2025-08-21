@@ -1,0 +1,72 @@
+on:
+  workflow_call:
+    inputs:
+      artifactPattern:
+        required: true
+        type: string
+        default: "release-packages-*"
+        description: "Pattern to match the artifact names to download"
+      environment:
+        required: true
+        type: string
+        default: "nuget-production"
+        description: "Environment name for manual approval (must be configured in repository settings)"
+      runId:
+        required: true
+        type: integer
+        description: "ID of the workflow run to download artifacts from"
+      workflowName:
+        required: true
+        type: string
+        default: "ci-dotnet.yml"
+        description: "Name of the workflow to check for successful builds"
+    secrets:
+      NUGET_TOKEN:
+        required: true
+      WORKFLOW_PACKAGES:
+        required: true
+
+if: ${{ github.event.workflow_run.conclusion == 'success' && github.actor != 'dependabot[bot]' }}
+
+concurrency:
+  group: ${{ github.ref }}@${{ github.ref }}-publish-nuget
+  cancel-in-progress: true
+
+env:
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  nuget:
+    name: Publish NuGet Packages
+    uses: ./.github/workflows/step-dotnet-publish-nuget.yml
+    with:
+      artifactPattern: ${{ inputs.artifactPattern }}
+      environment: ${{ inputs.environment }}
+      runId: ${{ inputs.runId }}
+      workflowName: ${{ inputs.workflowName }}
+    secrets: inherit
+
+  version:
+    name: Version Management
+    id: version
+    uses: ./.github/workflows/step-dotnet-version.yml
+    secrets: inherit
+
+  release:
+    name: Create Release
+    uses: ./.github/workflows/step-dotnet-draft-release.yml
+    needs:
+      - nuget
+      - version
+    inputs:
+      solution-version: ${{ needs.version.outputs.solution-version }}
+    secrets: inherit
