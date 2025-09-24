@@ -61,3 +61,5 @@ jobs:
         path: |
           **/*.nupkg
           **/*.snupkg
+          !**/empty.nupkg
+          !**/empty.snupkg
