@@ -106,7 +106,7 @@ jobs:
         dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-build --no-restore --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
 
     - name: ReportGenerator
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.15
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.16
       with:
         reports: '${{ github.workspace }}/**/TestResults/**/*.cobertura.xml'
         targetdir: '${{ github.workspace }}/coveragereports'
