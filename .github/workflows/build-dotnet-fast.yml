@@ -64,10 +64,19 @@ jobs:
     uses: ./.github/workflows/step-node-commitlint.yml
     secrets: inherit
 
+  version:
+    name: Version Management
+    uses: ./.github/workflows/step-dotnet-version.yml
+    with:
+      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
+    secrets: inherit
+
   build:
     name: Build and Test
     needs:
       - commitlinter
+      - version
     runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
     steps:
       - name: Checkout repository
@@ -95,11 +104,11 @@ jobs:
         run: dotnet restore ${{ inputs.solution }} --verbosity ${{ inputs.dotnetLogging || 'minimal' }}
 
       - name: Build solution
-        run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnetLogging || 'minimal' }} -c Release --no-restore /p:GeneratePackageOnBuild=false
+        run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnetLogging || 'minimal' }} -c Release --no-restore /p:GeneratePackageOnBuild=false /p:Version=${{ needs.version.outputs.solution-version }}
 
       - name: Test
         run: |
-          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnetLogging || 'minimal' }} --no-build --no-restore
+          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnetLogging || 'minimal' }} --no-build --no-restore /p:GeneratePackageOnBuild=false /p:Version=${{ needs.version.outputs.solution-version }}
 
   dependabot:
     name: Dependabot Merge

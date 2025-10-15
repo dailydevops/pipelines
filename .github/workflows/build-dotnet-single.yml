@@ -109,12 +109,14 @@ jobs:
     needs:
       - tests
       - format
+      - version
     with:
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
       dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
       runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
+      solution-version: ${{ needs.version.outputs.solution-version }}
     secrets: inherit
 
   dependabot:
