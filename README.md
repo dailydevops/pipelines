@@ -1,120 +1,681 @@
 # Daily DevOps & .NET - Pipelines
 
-This repository contains several workflow templates for the daily usage inside the Daily DevOps & .NET team. We try to automate as much as possible to make our lives easier. For that reason, we have created several GitHub Actions workflows that will help us to automate the process of building, testing, and deploying our applications.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-2088FF?logo=github-actions&logoColor=white)](https://github.com/dailydevops/pipelines/actions)
 
-## Workflows
+This repository contains reusable GitHub Actions workflow templates for .NET applications. These templates help automate the process of building, testing, and deploying applications, following best practices and reducing boilerplate code across projects.
 
-At the moment, we have concentrated on creating workflows for .NET applications. We have created two different workflows for .NET applications. These are a composition of several jobs that will help us to automate the process of building, testing, and deploying our applications.
+## Table of Contents
 
-All jobs are separated into templates that can be reused in other workflows. More details about the templates can be found in the [Templates](#templates) section.
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Main Workflow Templates](#main-workflow-templates)
+  - [build-dotnet-fast.yml](#build-dotnet-fastyml)
+  - [build-dotnet-single.yml](#build-dotnet-singleyml)
+  - [build-dotnet-matrix.yml](#build-dotnet-matrixyml)
+  - [cicd-dotnet.yml](#cicd-dotnetyml)
+  - [publish-nuget.yml](#publish-nugetyml)
+- [Step Templates](#step-templates)
+  - [step-node-commitlint.yml](#step-node-commitlintyml)
+  - [step-dotnet-version.yml](#step-dotnet-versionyml)
+  - [step-dotnet-format.yml](#step-dotnet-formatyml)
+  - [step-dotnet-build.yml](#step-dotnet-buildyml)
+  - [step-dotnet-tests.yml](#step-dotnet-testsyml)
+  - [step-dotnet-draft-release.yml](#step-dotnet-draft-releaseyml)
+  - [step-dotnet-publish-nuget.yml](#step-dotnet-publish-nugetyml)
+  - [step-dependabot-merge.yml](#step-dependabot-mergeyml)
+- [Common Usage Examples](#common-usage-examples)
+- [Additional Documentation](#additional-documentation)
+- [Contributing](#contributing)
+- [License](#license)
 
-### `ci-dotnet-fast.yml`
+## Overview
 
-### `ci-dotnet.yml`
+The pipelines in this repository are designed to be composable and reusable. They provide:
 
-## Templates
+- **Automated CI/CD** for .NET applications
+- **Code quality checks** including formatting and linting
+- **Testing** with coverage reporting and multiple OS support
+- **Versioning** using GitVersion
+- **Publishing** to NuGet with manual approval workflows
+- **Dependabot integration** for automated dependency updates
 
-### `step-dependabot-merge.yml`
+All workflows are designed to work with .NET 8.x and 9.x by default, with configurable support for other versions.
 
-This template is used to merge the pull request created by the dependabot. The template will check if the pull request is created by the dependabot and if the pull request is ready to be merged. If the conditions are met, the pull request will be merged.
+## Prerequisites
 
-To use this template, you need to add the following code to your workflow file:
+Before using these workflows, ensure you have:
+
+- A GitHub repository with a .NET solution or project
+- GitHub Actions enabled in your repository
+- Required secrets configured (see individual workflow documentation)
+- (Optional) GitVersion configuration file (`GitVersion.yml`) in your repository root
+- (Optional) Release Drafter configuration (`.github/release-drafter.yml`) for draft releases
+
+### Common Secrets
+
+Many workflows support the following optional secret:
+
+- **`FETCH_TOKEN`**: A GitHub Personal Access Token (PAT) with repository access, used to fetch dependencies from private repositories. If not provided, the default `github.token` is used.
+
+## Quick Start
+
+To use any of these workflows in your repository, reference them in your workflow file:
 
 ```yaml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
 jobs:
-  merge-dependabot:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: dailydevops/pipelines/.github/workflows/step-dependabot-merge.yml@0.12.16
-        secrets: inherits
+  build:
+    uses: dailydevops/pipelines/.github/workflows/build-dotnet-single.yml@main
+    with:
+      solution: "src/YourApp.sln"
+    secrets: inherit
 ```
 
-#### Secrets
+For specific versions, replace `@main` with a tag like `@v1.0.0`.
 
-This step requires the secret `DEPENDABOT` to be set in the repository. The secret should contain the GitHub token that has the permissions to merge the pull requests.
+## Main Workflow Templates
 
-### `step-dotnet-build.yml`
+These are complete CI/CD workflows that orchestrate multiple jobs.
 
-This template is used to build the .NET application. The template will build the application using the `dotnet build` command, and upload the build artifacts to the GitHub as an artifact `release-packages`.
+### `build-dotnet-fast.yml`
 
-To use this template, you need to add the following code to your workflow file:
+A fast CI pipeline that performs a single-pass build and test on a single OS. Ideal for quick feedback on pull requests.
+
+**Features:**
+- Commit linting
+- Build and test in one job (no separate stages)
+- Automatic Dependabot PR merging
+
+**Usage:**
 
 ```yaml
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: dailydevops/pipelines/.github/workflows/step-dotnet-build.yml@0.12.16
-        with:
-          solution: "src/MyApp.sln"
+    uses: dailydevops/pipelines/.github/workflows/build-dotnet-fast.yml@main
+    with:
+      solution: "src/YourApp.sln"
+    secrets: inherit
 ```
 
-#### Parameters
+**Parameters:**
 
-| Parameter        | Description                                    | Required | Default         |
-| ---------------- | ---------------------------------------------- | :------: | --------------- |
-| `disablePublish` | Disable the publishing of the build artifacts. |    ❌    | `false`         |
-| `dotnet-logging` | The verbosity of the dotnet build command.     |    ❌    | `quiet`         |
-| `dotnet-version` | The version of the dotnet SDK to use.          |    ❌    | `8.x`           |
-| `dotnet-quality` | The quality of the dotnet SDK to use.          |    ❌    | `ga`            |
-| `runs-on`        | The runner to use.                             |    ❌    | `ubuntu-latest` |
-| `solution`       | The path to the solution or project file.      |    ✅    |                 |
+| Parameter | Description | Required | Default |
+|-----------|-------------|----------|---------|
+| `solution` | Path to the solution or project file | ✅ | |
+| `disableCodeFormat` | Skip code formatting checks | ❌ | `false` |
+| `disableCoverageUpload` | Skip uploading coverage reports | ❌ | `false` |
+| `disableDependaMerge` | Disable automatic Dependabot merge | ❌ | `false` |
+| `dotnetLogging` | Verbosity level for dotnet commands | ❌ | `minimal` |
+| `dotnetVersion` | .NET SDK version(s) to install | ❌ | `8.x\n9.x` |
+| `dotnetQuality` | .NET SDK quality channel | ❌ | `ga` |
+| `enableCleanUpDockerDocker` | Free disk space by cleaning Docker images | ❌ | `false` |
+| `runsOnBuild` | Runner label for build job | ❌ | `ubuntu-latest` |
 
-#### Secrets
+**Secrets:**
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
 
-This step has an _optional_ secret `FETCH_TOKEN` that can be used to fetch the dependencies from the private repositories. The secret should contain the GitHub token that has the permissions to fetch the dependencies. If the secret is not set, the dependencies will be fetched using the default `{{ github.token }}`.
+---
 
-### `step-dotnet-draft-release.yml`
+### `build-dotnet-single.yml`
 
-### `step-dotnet-format.yml`
+A comprehensive CI pipeline that runs on a single OS with separate stages for formatting, versioning, testing, and building.
 
-### `step-dotnet-publish-nuget.yml`
+**Features:**
+- Commit linting
+- Code formatting validation
+- Version detection using GitVersion
+- Testing with coverage reports
+- Build with artifact publishing
+- Automatic Dependabot PR merging
+
+**Usage:**
+
+```yaml
+jobs:
+  build:
+    uses: dailydevops/pipelines/.github/workflows/build-dotnet-single.yml@main
+    with:
+      solution: "src/YourApp.sln"
+    secrets: inherit
+```
+
+**Parameters:**
+
+Same as `build-dotnet-fast.yml`.
+
+**Secrets:**
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
+
+---
+
+### `build-dotnet-matrix.yml`
+
+A comprehensive CI pipeline that runs tests across multiple operating systems (Windows, Linux, macOS) in a matrix strategy.
+
+**Features:**
+- All features from `build-dotnet-single.yml`
+- Multi-OS testing (Windows, Linux, macOS)
+- Configurable fail-fast behavior
+- OS-specific test exclusions
+
+**Usage:**
+
+```yaml
+jobs:
+  build:
+    uses: dailydevops/pipelines/.github/workflows/build-dotnet-matrix.yml@main
+    with:
+      solution: "src/YourApp.sln"
+    secrets: inherit
+```
+
+**Parameters:**
+
+All parameters from `build-dotnet-single.yml`, plus:
+
+| Parameter | Description | Required | Default |
+|-----------|-------------|----------|---------|
+| `disableTestsOnLinux` | Skip tests on Linux | ❌ | `false` |
+| `disableTestsOnMacOs` | Skip tests on macOS | ❌ | `false` |
+| `disableTestsOnWindows` | Skip tests on Windows | ❌ | `false` |
+| `failFast` | Stop all jobs if one fails | ❌ | `true` |
+
+**Secrets:**
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
+
+---
+
+### `cicd-dotnet.yml`
+
+A deprecated/experimental workflow template. This workflow is currently set to fail on purpose and should not be used.
+
+---
 
 ### `publish-nuget.yml`
 
-This template is used to publish .NET NuGet packages with manual approval and cross-workflow artifact support. The template downloads artifacts from a specified pipeline run, verifies the last successful build on the main branch, and requires manual approval before publishing.
+A workflow for publishing NuGet packages with manual approval. This workflow verifies a successful build on the main branch and requires manual approval before publishing to NuGet.
 
-To use this template, you need to add the following code to your workflow file:
+**Features:**
+- Cross-workflow artifact downloading
+- Build verification on main branch
+- Manual approval via GitHub Environments
+- Automatic package publishing to NuGet.org
+
+**Usage:**
+
+```yaml
+name: Publish to NuGet
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    uses: dailydevops/pipelines/.github/workflows/publish-nuget.yml@main
+    with:
+      source-workflow-name: "build-dotnet-single.yml"
+      environment: "nuget-production"
+    secrets:
+      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+```
+
+**Parameters:**
+
+| Parameter | Description | Required | Default |
+|-----------|-------------|----------|---------|
+| `source-repo` | Repository containing the workflow run | ❌ | `${{ github.repository }}` |
+| `source-workflow-name` | Workflow name to check for builds | ❌ | `ci-dotnet.yml` |
+| `artifact-name` | Name of artifact to download | ❌ | `release-packages` |
+| `environment` | GitHub Environment for manual approval | ❌ | `nuget-production` |
+
+**Secrets:**
+
+| Secret | Description | Required |
+|--------|-------------|----------|
+| `NUGET_TOKEN` | NuGet API key for publishing | ✅ |
+| `GITHUB_TOKEN` | GitHub token for workflow access | ❌ |
+
+**Prerequisites:**
+- GitHub Environment configured with manual approval reviewers
+- Source workflow must produce NuGet package artifacts
+- See [Manual Approval Setup Guide](./docs/MANUAL_APPROVAL_SETUP.md) for detailed setup instructions
+
+---
+
+## Step Templates
+
+These are individual job templates that can be composed into custom workflows or used independently.
+
+### `step-node-commitlint.yml`
+
+Validates commit messages using commitlint to ensure they follow conventional commit standards.
+
+**Usage:**
+
+```yaml
+jobs:
+  commitlint:
+    uses: dailydevops/pipelines/.github/workflows/step-node-commitlint.yml@main
+    secrets: inherit
+```
+
+**Parameters:** None
+
+**Secrets:**
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
+
+**Requirements:**
+- `.commitlintrc` or similar configuration file in repository root
+
+---
+
+### `step-dotnet-version.yml`
+
+Detects the version of your application using GitVersion based on commit history and branching strategy.
+
+**Usage:**
+
+```yaml
+jobs:
+  version:
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-version.yml@main
+    with:
+      dotnet-version: "8.x"
+    secrets: inherit
+  
+  # Use the version in another job
+  another-job:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Version is ${{ needs.version.outputs.solution-version }}"
+```
+
+**Parameters:**
+
+| Parameter | Description | Required | Default |
+|-----------|-------------|----------|---------|
+| `dotnet-version` | .NET SDK version to install | ❌ | `8.x` |
+| `dotnet-quality` | .NET SDK quality channel | ❌ | `ga` |
+| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+
+**Outputs:**
+
+| Output | Description |
+|--------|-------------|
+| `solution-version` | Detected semantic version (e.g., `1.2.3`) |
+
+**Secrets:**
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
+
+**Requirements:**
+- `GitVersion.yml` configuration file in repository root
+
+---
+
+### `step-dotnet-format.yml`
+
+Validates code formatting using CSharpier to ensure consistent code style.
+
+**Usage:**
+
+```yaml
+jobs:
+  format:
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-format.yml@main
+    with:
+      dotnet-version: "8.x"
+    secrets: inherit
+```
+
+**Parameters:**
+
+| Parameter | Description | Required | Default |
+|-----------|-------------|----------|---------|
+| `dotnet-logging` | Verbosity level | ❌ | `quiet` |
+| `dotnet-version` | .NET SDK version | ❌ | `8.x` |
+| `dotnet-quality` | .NET SDK quality channel | ❌ | `ga` |
+| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+
+**Secrets:**
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
+
+**Requirements:**
+- CSharpier will be installed automatically
+
+---
+
+### `step-dotnet-build.yml`
+
+Builds the .NET solution and uploads build artifacts as `release-packages`.
+
+**Usage:**
+
+```yaml
+jobs:
+  build:
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-build.yml@main
+    with:
+      solution: "src/YourApp.sln"
+    secrets: inherit
+```
+
+**Parameters:**
+
+| Parameter | Description | Required | Default |
+|-----------|-------------|----------|---------|
+| `solution` | Path to solution or project file | ✅ | |
+| `disablePublish` | Skip uploading artifacts | ❌ | `false` |
+| `dotnet-logging` | Verbosity level | ❌ | `quiet` |
+| `dotnet-version` | .NET SDK version | ❌ | `8.x` |
+| `dotnet-quality` | .NET SDK quality channel | ❌ | `ga` |
+| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+
+**Secrets:**
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
+
+**Artifacts:**
+- `release-packages`: Contains built NuGet packages (if any)
+
+---
+
+### `step-dotnet-tests.yml`
+
+Runs tests for the .NET solution with code coverage reporting.
+
+**Features:**
+- Test execution with coverage collection
+- ReportGenerator for coverage reports
+- Codecov integration
+- Optional SonarQube support
+- Optional Docker image cleanup for disk space
+
+**Usage:**
+
+```yaml
+jobs:
+  version:
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-version.yml@main
+    secrets: inherit
+  
+  test:
+    needs: version
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-tests.yml@main
+    with:
+      solution: "src/YourApp.sln"
+      solution-version: ${{ needs.version.outputs.solution-version }}
+    secrets: inherit
+```
+
+**Parameters:**
+
+| Parameter | Description | Required | Default |
+|-----------|-------------|----------|---------|
+| `solution` | Path to solution or project file | ✅ | |
+| `solution-version` | Version from step-dotnet-version | ✅ | |
+| `enableSonarQube` | Enable SonarQube analysis | ❌ | `false` |
+| `enableCleanUpDockerDocker` | Free disk space | ❌ | `false` |
+| `disableCoverageUpload` | Skip coverage artifacts | ❌ | `false` |
+| `dotnet-logging` | Verbosity level | ❌ | `quiet` |
+| `dotnet-version` | .NET SDK version | ❌ | `8.x` |
+| `dotnet-quality` | .NET SDK quality channel | ❌ | `ga` |
+| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+| `retry-max-attempts` | Max retry attempts | ❌ | `3` |
+| `retry-timeout` | Timeout in minutes | ❌ | `15` |
+
+**Secrets:**
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
+- `CODECOV_TOKEN` (optional): Codecov token for coverage upload
+- `SONAR_ORGANIZATION` (optional): SonarQube organization
+- `SONAR_PROJECT` (optional): SonarQube project key
+- `SONAR_TOKEN` (optional): SonarQube token
+
+**Artifacts:**
+- `reportgenerator-{os}-{hash}`: Generated coverage reports
+- `coverage-{os}-{hash}`: Raw coverage data files
+- `logs-{os}-{hash}`: Test logs and SARIF files
+
+---
+
+### `step-dotnet-draft-release.yml`
+
+Creates or updates a draft release using Release Drafter when code is pushed to the main branch.
+
+**Usage:**
+
+```yaml
+jobs:
+  version:
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-version.yml@main
+    secrets: inherit
+  
+  release:
+    needs: version
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-draft-release.yml@main
+    with:
+      solution-version: ${{ needs.version.outputs.solution-version }}
+    secrets: inherit
+```
+
+**Parameters:**
+
+| Parameter | Description | Required | Default |
+|-----------|-------------|----------|---------|
+| `solution-version` | Version from step-dotnet-version | ✅ | |
+| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+
+**Secrets:**
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
+- `GITHUB_TOKEN` (required): Automatically provided
+
+**Requirements:**
+- `.github/release-drafter.yml` configuration file
+- Only runs on pushes to `main` branch (not pull requests)
+
+---
+
+### `step-dotnet-publish-nuget.yml`
+
+Publishes NuGet packages from artifacts to NuGet.org with manual approval via GitHub Environments.
+
+**Usage:**
 
 ```yaml
 jobs:
   publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: dailydevops/pipelines/.github/workflows/publish-nuget.yml@main
-        with:
-          source-workflow-name: "ci-dotnet.yml"
-          environment: "nuget-production"
-        secrets:
-          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-publish-nuget.yml@main
+    with:
+      artifactPattern: "release-packages-*"
+      environment: "nuget-production"
+      runId: "123456789"
+      workflowName: "build-dotnet-single.yml"
+    secrets:
+      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      WORKFLOW_PACKAGES: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-#### Parameters
+**Parameters:**
 
-| Parameter              | Description                                                                | Required | Default              |
-| ---------------------- | -------------------------------------------------------------------------- | :------: | -------------------- |
-| `source-repo`          | Repository containing the workflow run with artifacts.                    |    ❌    | `${{ github.repository }}` |
-| `source-workflow-name` | Name of the workflow to check for successful builds.                      |    ❌    | `ci-dotnet.yml`      |
-| `artifact-name`        | Name of the artifact to download.                                         |    ❌    | `release-packages`   |
-| `environment`          | Environment name for manual approval (must be configured in repository).  |    ❌    | `nuget-production`   |
+| Parameter | Description | Required | Default |
+|-----------|-------------|----------|---------|
+| `artifactPattern` | Pattern to match artifacts | ✅ | `release-packages-*` |
+| `environment` | GitHub Environment for approval | ✅ | `nuget-production` |
+| `runId` | Workflow run ID to download from | ✅ | |
+| `workflowName` | Source workflow name | ✅ | `ci-dotnet.yml` |
 
-#### Secrets
+**Secrets:**
 
-| Secret       | Description                                           | Required |
-| ------------ | ----------------------------------------------------- | :------: |
-| `NUGET_TOKEN` | NuGet API key for publishing packages to nuget.org  |    ✅    |
-| `GITHUB_TOKEN` | GitHub token for accessing workflow runs and artifacts |    ❌    |
+| Secret | Description | Required |
+|--------|-------------|----------|
+| `NUGET_TOKEN` | NuGet API key | ✅ |
+| `WORKFLOW_PACKAGES` | GitHub token for artifacts | ✅ |
 
-#### Prerequisites
+**Note:** Consider using the higher-level `publish-nuget.yml` workflow instead for a more complete publishing solution.
 
-- The target repository must have a GitHub environment configured (e.g., `nuget-production`) with manual approval reviewers
-- The source workflow must have completed successfully on the main branch
-- The source workflow must produce artifacts with NuGet packages
+---
 
-For detailed instructions on setting up the GitHub environment for manual approval, see [Manual Approval Setup Guide](./docs/MANUAL_APPROVAL_SETUP.md).
+### `step-dependabot-merge.yml`
 
-### `step-dotnet-tests.yml`
+Automatically merges Dependabot pull requests after successful CI checks.
 
-### `step-dotnet-version.yml`
+**Usage:**
 
-### `step-node-commitlint.yml`
+```yaml
+jobs:
+  dependabot:
+    if: github.actor == 'dependabot[bot]'
+    needs: [build, test]  # Add your CI jobs here
+    uses: dailydevops/pipelines/.github/workflows/step-dependabot-merge.yml@main
+    secrets: inherit
+```
+
+**Parameters:** None
+
+**Secrets:**
+- All secrets are inherited from the calling workflow
+- Requires appropriate `GITHUB_TOKEN` permissions to merge PRs
+
+**Requirements:**
+- Only runs on pull requests from `dependabot[bot]`
+- All required status checks must pass before merge
+
+---
+
+## Common Usage Examples
+
+### Basic CI/CD Pipeline
+
+```yaml
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    uses: dailydevops/pipelines/.github/workflows/build-dotnet-single.yml@main
+    with:
+      solution: "src/MyApp.sln"
+    secrets: inherit
+```
+
+### Multi-OS Testing
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    uses: dailydevops/pipelines/.github/workflows/build-dotnet-matrix.yml@main
+    with:
+      solution: "src/MyApp.sln"
+      disableTestsOnMacOs: true  # Skip macOS if not needed
+    secrets: inherit
+```
+
+### Custom Pipeline with Individual Steps
+
+```yaml
+name: Custom Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  commitlint:
+    uses: dailydevops/pipelines/.github/workflows/step-node-commitlint.yml@main
+    secrets: inherit
+
+  version:
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-version.yml@main
+    secrets: inherit
+
+  format:
+    needs: [commitlint]
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-format.yml@main
+    secrets: inherit
+
+  test:
+    needs: [commitlint, version]
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-tests.yml@main
+    with:
+      solution: "src/MyApp.sln"
+      solution-version: ${{ needs.version.outputs.solution-version }}
+    secrets: inherit
+
+  build:
+    needs: [test, format]
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-build.yml@main
+    with:
+      solution: "src/MyApp.sln"
+    secrets: inherit
+
+  draft-release:
+    if: github.ref == 'refs/heads/main'
+    needs: [build, version]
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-draft-release.yml@main
+    with:
+      solution-version: ${{ needs.version.outputs.solution-version }}
+    secrets: inherit
+```
+
+### Publishing to NuGet with Approval
+
+```yaml
+name: Publish to NuGet
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    uses: dailydevops/pipelines/.github/workflows/publish-nuget.yml@main
+    with:
+      source-workflow-name: "build-dotnet-single.yml"
+      environment: "nuget-production"
+      artifact-name: "release-packages"
+    secrets:
+      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+## Additional Documentation
+
+- [Manual Approval Setup Guide](./docs/MANUAL_APPROVAL_SETUP.md) - Detailed instructions for configuring GitHub Environments for manual approval workflows
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues or pull requests.
+
+When contributing:
+1. Ensure your changes are backwards compatible
+2. Update documentation for any parameter or behavior changes
+3. Follow conventional commit standards
+4. Test your changes in a real project before submitting
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2023-2025 Daily DevOps & .NET
