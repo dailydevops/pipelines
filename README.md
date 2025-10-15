@@ -208,6 +208,7 @@ A workflow for publishing NuGet packages with manual approval. This workflow ver
 - Build verification on main branch
 - Manual approval via GitHub Environments
 - Automatic package publishing to NuGet.org
+- Automated release creation
 
 **Usage:**
 
@@ -221,27 +222,32 @@ jobs:
   publish:
     uses: dailydevops/pipelines/.github/workflows/publish-nuget.yml@main
     with:
-      source-workflow-name: "build-dotnet-single.yml"
+      artifactPattern: "release-packages-*"
+      workflowName: "build-dotnet-single.yml"
+      runId: "1234567890"  # Get this from the workflow run you want to publish
       environment: "nuget-production"
     secrets:
       NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      WORKFLOW_PACKAGES: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 **Parameters:**
 
 | Parameter | Description | Required | Default |
 |-----------|-------------|----------|---------|
-| `source-repo` | Repository containing the workflow run | ❌ | `${{ github.repository }}` |
-| `source-workflow-name` | Workflow name to check for builds | ❌ | `build-dotnet-single.yml` |
-| `artifact-name` | Name of artifact to download | ❌ | `release-packages` |
-| `environment` | GitHub Environment for manual approval | ❌ | `nuget-production` |
+| `artifactPattern` | Pattern to match artifact names | ✅ | `release-packages-*` |
+| `workflowName` | Workflow name to check for builds | ✅ | `ci-dotnet.yml` |
+| `runId` | ID of workflow run to download artifacts from | ✅ | (none) |
+| `environment` | GitHub Environment for manual approval | ✅ | `nuget-production` |
+
+> **Note:** The default `workflowName` value `ci-dotnet.yml` is a legacy reference. You should explicitly specify your actual build workflow name (e.g., `build-dotnet-single.yml`, `build-dotnet-matrix.yml`, or `build-dotnet-fast.yml`).
 
 **Secrets:**
 
 | Secret | Description | Required |
 |--------|-------------|----------|
 | `NUGET_TOKEN` | NuGet API key for publishing | ✅ |
-| `GITHUB_TOKEN` | GitHub token for workflow access | ❌ |
+| `WORKFLOW_PACKAGES` | GitHub token for workflow/artifact access | ✅ |
 
 **Prerequisites:**
 - GitHub Environment configured with manual approval reviewers
@@ -509,7 +515,9 @@ jobs:
 | `artifactPattern` | Pattern to match artifacts | ✅ | `release-packages-*` |
 | `environment` | GitHub Environment for approval | ✅ | `nuget-production` |
 | `runId` | Workflow run ID to download from | ✅ | |
-| `workflowName` | Source workflow name | ✅ | `build-dotnet-single.yml` |
+| `workflowName` | Source workflow name | ✅ | `ci-dotnet.yml` |
+
+> **Note:** The default `workflowName` value `ci-dotnet.yml` is a legacy reference. You should explicitly specify your actual build workflow name (e.g., `build-dotnet-single.yml`, `build-dotnet-matrix.yml`, or `build-dotnet-fast.yml`).
 
 **Secrets:**
 
@@ -652,12 +660,13 @@ jobs:
   publish:
     uses: dailydevops/pipelines/.github/workflows/publish-nuget.yml@main
     with:
-      source-workflow-name: "build-dotnet-single.yml"
+      artifactPattern: "release-packages-*"
+      workflowName: "build-dotnet-single.yml"
+      runId: "1234567890"  # Replace with actual workflow run ID
       environment: "nuget-production"
-      artifact-name: "release-packages"
     secrets:
       NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      WORKFLOW_PACKAGES: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Additional Documentation
