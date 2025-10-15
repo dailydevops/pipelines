@@ -98,12 +98,12 @@ jobs:
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
     - name: Build
-      run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-restore /p:GeneratePackageOnBuild=false
+      run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-restore /p:GeneratePackageOnBuild=false /p:Version=${{ inputs.solution-version }}
 
     - name: Test
       id: test
       run: |
-        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-build --no-restore --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
+        dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-build --no-restore --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:Version=${{ inputs.solution-version }} /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
 
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@5.4.17
