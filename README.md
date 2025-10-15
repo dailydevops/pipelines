@@ -235,12 +235,12 @@ jobs:
 
 | Parameter | Description | Required | Default |
 |-----------|-------------|----------|---------|
-| `artifactPattern` | Pattern to match artifact names | ❌ | `release-packages-*` |
-| `workflowName` | Workflow name to check for builds | ❌ | `ci-dotnet.yml` |
+| `artifactPattern` | Pattern to match artifact names | ✅ | `release-packages-*` |
+| `workflowName` | Workflow name to check for builds | ✅ | `ci-dotnet.yml` |
 | `runId` | ID of workflow run to download artifacts from | ✅ | (none) |
-| `environment` | GitHub Environment for manual approval | ❌ | `nuget-production` |
+| `environment` | GitHub Environment for manual approval | ✅ | `nuget-production` |
 
-> **Note:** The default `workflowName` value `ci-dotnet.yml` is a legacy reference. You should explicitly specify your actual build workflow name (e.g., `build-dotnet-single.yml`, `build-dotnet-matrix.yml`, or `build-dotnet-fast.yml`).
+> **Note:** Parameters marked as required have default values (except `runId`), so you only need to specify them if you want to override the defaults. The default `workflowName` value `ci-dotnet.yml` is a legacy reference - you should explicitly specify your actual build workflow name (e.g., `build-dotnet-single.yml`, `build-dotnet-matrix.yml`, or `build-dotnet-fast.yml`).
 
 **Secrets:**
 
@@ -512,12 +512,12 @@ jobs:
 
 | Parameter | Description | Required | Default |
 |-----------|-------------|----------|---------|
-| `artifactPattern` | Pattern to match artifacts | ❌ | `release-packages-*` |
-| `environment` | GitHub Environment for approval | ❌ | `nuget-production` |
+| `artifactPattern` | Pattern to match artifacts | ✅ | `release-packages-*` |
+| `environment` | GitHub Environment for approval | ✅ | `nuget-production` |
 | `runId` | Workflow run ID to download from | ✅ | |
-| `workflowName` | Source workflow name | ❌ | `ci-dotnet.yml` |
+| `workflowName` | Source workflow name | ✅ | `ci-dotnet.yml` |
 
-> **Note:** The default `workflowName` value `ci-dotnet.yml` is a legacy reference. You should explicitly specify your actual build workflow name (e.g., `build-dotnet-single.yml`, `build-dotnet-matrix.yml`, or `build-dotnet-fast.yml`).
+> **Note:** Parameters marked as required have default values (except `runId`), so you only need to specify them if you want to override the defaults. The default `workflowName` value `ci-dotnet.yml` is a legacy reference - you should explicitly specify your actual build workflow name (e.g., `build-dotnet-single.yml`, `build-dotnet-matrix.yml`, or `build-dotnet-fast.yml`).
 
 **Secrets:**
 
