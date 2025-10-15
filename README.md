@@ -232,7 +232,7 @@ jobs:
 | Parameter | Description | Required | Default |
 |-----------|-------------|----------|---------|
 | `source-repo` | Repository containing the workflow run | ❌ | `${{ github.repository }}` |
-| `source-workflow-name` | Workflow name to check for builds | ❌ | `ci-dotnet.yml` |
+| `source-workflow-name` | Workflow name to check for builds | ❌ | `build-dotnet-single.yml` |
 | `artifact-name` | Name of artifact to download | ❌ | `release-packages` |
 | `environment` | GitHub Environment for manual approval | ❌ | `nuget-production` |
 
@@ -509,7 +509,7 @@ jobs:
 | `artifactPattern` | Pattern to match artifacts | ✅ | `release-packages-*` |
 | `environment` | GitHub Environment for approval | ✅ | `nuget-production` |
 | `runId` | Workflow run ID to download from | ✅ | |
-| `workflowName` | Source workflow name | ✅ | `ci-dotnet.yml` |
+| `workflowName` | Source workflow name | ✅ | `build-dotnet-single.yml` |
 
 **Secrets:**
 
