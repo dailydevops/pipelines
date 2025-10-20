@@ -45,7 +45,7 @@ jobs:
       dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
       enableCleanUpDockerDocker: true
       runsOnBuild: windows-latest
-      solution: ./testprojects/hosting.winforms/Extensions.Hosting.WinForms.sln
+      solution: ./testprojects/hosting.winforms/Extensions.Hosting.WinForms.slnx
     secrets: inherit
 
   dependabot:
