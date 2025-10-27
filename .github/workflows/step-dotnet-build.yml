@@ -57,7 +57,7 @@ jobs:
       run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }} -c Release --no-restore /p:Version=${{ inputs.solution-version }}
 
     - name: Upload NuGet packages
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       with:
         name: release-packages-${{ hashFiles(inputs.solution) }}
         if-no-files-found: error
