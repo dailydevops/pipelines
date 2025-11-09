@@ -91,6 +91,7 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
           dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
+          global-json-file: ./global.json
 
       - name: NuGet cache
         uses: actions/cache@v4.3.0

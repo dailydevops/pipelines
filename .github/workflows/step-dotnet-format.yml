@@ -43,6 +43,7 @@ jobs:
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
+        global-json-file: ./global.json
 
     - name: Install CSharpier
       run: |
