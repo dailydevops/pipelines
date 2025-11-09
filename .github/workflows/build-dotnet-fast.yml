@@ -108,7 +108,7 @@ jobs:
 
       - name: Test
         run: |
-          dotnet test ${{ inputs.solution }} -c Release -v ${{ inputs.dotnetLogging || 'minimal' }} --no-build --no-restore /p:GeneratePackageOnBuild=false /p:Version=${{ needs.version.outputs.solution-version }}
+          dotnet test --solution ${{ inputs.solution }} -c Release -v ${{ inputs.dotnetLogging || 'minimal' }} --no-build --no-restore /p:GeneratePackageOnBuild=false /p:Version=${{ needs.version.outputs.solution-version }}
 
   dependabot:
     name: Dependabot Merge
