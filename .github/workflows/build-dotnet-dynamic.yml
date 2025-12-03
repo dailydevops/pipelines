@@ -20,7 +20,7 @@ on:
       disableTestsOnMacOs:
         required: false
         type: boolean
-        default: true
+        default: faltruese
       disableTestsOnWindows:
         required: false
         type: boolean
@@ -51,6 +51,9 @@ on:
         required: false
         type: string
         default: 'ubuntu-latest'
+      script-path:
+        required: true
+        type: string
       solution:
         required: true
         type: string
@@ -88,6 +91,12 @@ jobs:
       dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
     secrets: inherit
 
+  collect-matrix:
+    name: Collect Dynamic Matrix
+    uses: ./.github/workflows/step-collect-matrix.yml
+    with:
+      script-path: ${{ inputs.script-path }}
+
   format:
     name: Code Formatting
     if: ${{ !inputs.disableCodeFormat }}
@@ -107,9 +116,11 @@ jobs:
     needs:
       - commitlinter
       - version
+      - collect-matrix
     strategy:
       fail-fast: ${{ inputs.failFast || true }}
       matrix:
+        test-filter: ${{ fromJson(needs.collect-matrix.outputs.matrix) }}
         os:
           - windows-latest
           - ubuntu-latest
@@ -124,9 +135,11 @@ jobs:
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
       dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
       enableCleanUpDockerDocker: ${{ inputs.enableCleanUpDockerDocker || false }}
+      execution-name: "tests-${{ matrix.os }}-${{ matrix.test-filter }}"
       runs-on: ${{ matrix.os }}
       solution: ${{ inputs.solution }}
       solution-version: ${{ needs.version.outputs.solution-version }}
+      test-filter: "/*/*/*/*[TestGroup=${{ matrix.test-filter }}]"
     secrets: inherit
 
   build:

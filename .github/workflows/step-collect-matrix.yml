@@ -1,0 +1,37 @@
+on:
+  workflow_call:
+    inputs:
+      script-path:
+        required: true
+        type: string
+      runs-on:
+        required: false
+        type: string
+        default: ubuntu-latest
+    secrets:
+      FETCH_TOKEN:
+        required: false
+
+jobs:
+  collect-matrix:
+    name: Collect Dynamic Matrix
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
+
+    outputs:
+      matrix: ${{ steps.collect.outputs.matrix }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      with:
+        fetch-depth: 0
+        submodules: recursive
+        token: ${{ secrets.FETCH_TOKEN || github.token }}
+
+    - name: Collect TestGroups
+      id: collect
+      shell: pwsh
+      run: |
+        $matrix = ${{ inputs.script-path }}
+        echo $matrix
+        echo "matrix=$matrix" >> $env:GITHUB_OUTPUT
