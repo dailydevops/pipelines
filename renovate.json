@@ -16,6 +16,9 @@
     "github-actions",
     "git-submodules"
   ],
+  "git-submodules": {
+    "enabled": true
+  },
   "packageRules": [
     {
       "matchManagers": [
