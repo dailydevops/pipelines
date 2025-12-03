@@ -96,6 +96,7 @@ jobs:
     uses: ./.github/workflows/step-collect-matrix.yml
     with:
       script-path: ${{ inputs.script-path }}
+    secrets: inherit
 
   format:
     name: Code Formatting
