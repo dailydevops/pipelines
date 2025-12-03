@@ -80,21 +80,21 @@ jobs:
     runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 0
           submodules: recursive
           token: ${{ secrets.FETCH_TOKEN || github.token }}
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5.0.1
+        uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
         with:
           dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
           dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
           global-json-file: ./global.json
 
       - name: NuGet cache
-        uses: actions/cache@v4.3.0
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
