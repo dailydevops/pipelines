@@ -87,7 +87,7 @@ jobs:
           token: ${{ secrets.FETCH_TOKEN || github.token }}
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5.0.0
+        uses: actions/setup-dotnet@v5.0.1
         with:
           dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
           dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
