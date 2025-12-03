@@ -38,14 +38,14 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6.0.1
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       with:
         fetch-depth: 0
         submodules: recursive
         token: ${{ secrets.FETCH_TOKEN || github.token }}
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5.0.1
+      uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
@@ -58,7 +58,7 @@ jobs:
       run: dotnet build ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }} -c Release --no-restore /p:Version=${{ inputs.solution-version }}
 
     - name: Upload NuGet packages
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       with:
         name: release-packages-${{ hashFiles(inputs.solution) }}
         if-no-files-found: error
