@@ -22,7 +22,7 @@ on:
         type: string
         default: ga
       execution-name:
-        required: true
+        required: false
         type: string
         default: default
       runs-on:
