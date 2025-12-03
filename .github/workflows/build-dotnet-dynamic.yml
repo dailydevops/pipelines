@@ -20,7 +20,7 @@ on:
       disableTestsOnMacOs:
         required: false
         type: boolean
-        default: faltruese
+        default: true
       disableTestsOnWindows:
         required: false
         type: boolean
