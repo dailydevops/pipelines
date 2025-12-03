@@ -1,6 +1,37 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:best-practices",
+    ":disableDependencyDashboard",
+    ":automergeMinor",
+    ":automergePatch",
+    ":rebaseStalePrs"
+  ],
+  "ignorePresets": [
+    "group:monorepos"
+  ],
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "enabledManagers": [
+    "github-actions",
+    "git-submodules"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "github-actions",
+        "git-submodules"
+      ],
+      "labels": [
+        "dependency:actions"
+      ],
+      "automerge": true,
+      "semanticCommits": "enabled",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "ci",
+      "assignees": [
+        "samtrion"
+      ]
+    }
   ]
 }
