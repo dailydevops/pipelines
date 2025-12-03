@@ -21,6 +21,10 @@ on:
         required: false
         type: string
         default: ga
+      execution-name:
+        required: true
+        type: string
+        default: default
       runs-on:
         required: false
         type: string
@@ -39,6 +43,10 @@ on:
         required: false
         type: number
         default: 15
+      test-filter:
+        required: false
+        type: string
+        default: ''
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -92,12 +100,12 @@ jobs:
     - name: Test
       id: test
       run: |
-        dotnet test --solution ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-build --no-restore /p:Version=${{ inputs.solution-version }} /p:GeneratePackageOnBuild=false -- --coverage --coverage-output-format cobertura
+        dotnet test  --solution ${{ inputs.solution }}  -c Release  -v ${{ inputs.dotnet-logging || 'minimal' }}  --no-build --no-restore /p:Version=${{ inputs.solution-version }} --results-directory ./TestResults --ignore-exit-code 8 ${{ inputs.test-filter != '' && format('--treenode-filter "{0}"', inputs.test-filter) || ''}} -- --coverage --coverage-output-format cobertura
 
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@ee0ae774f6d3afedcbd1683c1ab21b83670bdf8e # v5.5.1
       with:
-        reports: '${{ github.workspace }}/**/TestResults/**/*.cobertura.xml'
+        reports: '${{ github.workspace }}/TestResults/**/*.cobertura.xml'
         targetdir: '${{ github.workspace }}/coveragereports'
         reporttypes: 'Cobertura;MarkdownSummaryGithub'
 
@@ -119,7 +127,7 @@ jobs:
       uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       if: always()
       with:
-        name: reportgenerator-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}
+        name: reportgenerator-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}-${{ inputs.execution-name }}
         path: |
           ${{ github.workspace }}/coveragereports/**/*.*
 
@@ -127,7 +135,7 @@ jobs:
       uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       if: ${{ inputs.disableCoverageUpload == false }}
       with:
-        name: coverage-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}
+        name: coverage-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}-${{ inputs.execution-name }}
         path: |
           **/TestResults/**/*.opencover.xml
           **/TestResults/**/*.cobertura.xml
@@ -136,7 +144,7 @@ jobs:
       uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       if: ${{ always() }}
       with:
-        name: logs-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}
+        name: logs-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}-${{ inputs.execution-name }}
         if-no-files-found: ignore
         path: |
           **/TestResults/**/*.log
