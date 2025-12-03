@@ -19,7 +19,6 @@ jobs:
       disableDependaMerge: true
       disableTestsOnMacOs: false
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
-      dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
       enableCleanUpDockerDocker: false
       solution: ./testprojects/archiduct/ArchiDuct.sln
     secrets: inherit
@@ -30,7 +29,6 @@ jobs:
     with:
       disableDependaMerge: true
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
-      dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
       enableCleanUpDockerDocker: true
       script-path: ./testprojects/healthchecks/.github/scripts/Collect-TestProjects.ps1
       solution: ./testprojects/healthchecks/HealthChecks.slnx
@@ -43,7 +41,6 @@ jobs:
       disableCodeFormat: true
       disableDependaMerge: true
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
-      dotnetQuality: ${{ vars.NE_DOTNET_QUALITY }}
       enableCleanUpDockerDocker: true
       runsOnBuild: windows-latest
       solution: ./testprojects/hosting.winforms/Extensions.Hosting.WinForms.slnx

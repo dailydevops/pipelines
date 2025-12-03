@@ -35,10 +35,6 @@ on:
         default: |
           8.x
           9.x
-      dotnetQuality:
-        required: false
-        type: string
-        default: ga
       enableCleanUpDockerDocker:
         required: false
         type: boolean
@@ -88,7 +84,6 @@ jobs:
     uses: ./.github/workflows/step-dotnet-version.yml
     with:
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
     secrets: inherit
 
   collect-matrix:
@@ -107,7 +102,6 @@ jobs:
     with:
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
       runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
     secrets: inherit
 
@@ -134,7 +128,6 @@ jobs:
       disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
       enableCleanUpDockerDocker: ${{ inputs.enableCleanUpDockerDocker || false }}
       execution-name: ${{ matrix.test-filter }}
       runs-on: ${{ matrix.os }}
@@ -154,7 +147,6 @@ jobs:
     with:
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
-      dotnet-quality: ${{ inputs.dotnetQuality || 'ga' }}
       runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
       solution-version: ${{ needs.version.outputs.solution-version }}

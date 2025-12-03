@@ -17,10 +17,6 @@ on:
         required: false
         type: string
         default: 8.x
-      dotnet-quality:
-        required: false
-        type: string
-        default: ga
       execution-name:
         required: false
         type: string
@@ -35,14 +31,6 @@ on:
       solution-version:
         required: true
         type: string
-      retry-max-attempts:
-        required: false
-        type: number
-        default: 3
-      retry-timeout:
-        required: false
-        type: number
-        default: 15
       test-filter:
         required: false
         type: string
@@ -88,7 +76,6 @@ jobs:
       uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
-        dotnet-quality: ${{ inputs.dotnet-quality }}
         global-json-file: ./global.json
 
     - name: Restore dependencies
