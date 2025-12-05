@@ -30,7 +30,7 @@ jobs:
       disableDependaMerge: true
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       enableCleanUpDockerDocker: true
-      script-path: ${{ github.workspace}}/testprojects/healthchecks/scripts/Collect-TestProjects.ps1
+      script-path: ./testprojects/healthchecks/scripts/Collect-TestProjects.ps1
       solution: ./testprojects/healthchecks/HealthChecks.slnx
     secrets: inherit
 
