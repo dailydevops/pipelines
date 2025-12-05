@@ -11,6 +11,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: testprojects-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   archiduct:
     name: Archiduct
