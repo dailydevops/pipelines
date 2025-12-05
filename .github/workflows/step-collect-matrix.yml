@@ -12,6 +12,9 @@ on:
       FETCH_TOKEN:
         required: false
 
+permissions:
+  contents: read
+
 jobs:
   collect-matrix:
     name: Collect Dynamic Matrix

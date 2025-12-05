@@ -27,6 +27,9 @@ on:
       FETCH_TOKEN:
         required: false
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build .NET solution

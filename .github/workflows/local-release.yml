@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   cancel-in-progress: true
   group: ${{ github.ref }}@${{ github.ref }}-local-release
