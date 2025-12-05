@@ -35,6 +35,6 @@ jobs:
       id: collect
       shell: pwsh
       run: |
-        $matrix = ${{ inputs.script-path }}
+        $matrix = & ${{ inputs.script-path }}
         echo $matrix
         echo "matrix=$matrix" >> $env:GITHUB_OUTPUT
