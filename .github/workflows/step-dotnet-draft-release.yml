@@ -13,7 +13,8 @@ on:
         required: false
 
 permissions:
-  contents: read
+    contents: write
+    pull-requests: write
 
 jobs:
   draft-release:
