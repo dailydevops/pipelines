@@ -11,6 +11,10 @@ on:
     secrets:
       FETCH_TOKEN:
         required: false
+    outputs:
+      matrix:
+        description: 'The collected matrix from the script'
+        value: ${{ jobs.collect-matrix.outputs.matrix }}
 
 permissions:
   contents: read
