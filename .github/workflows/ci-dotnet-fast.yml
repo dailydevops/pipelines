@@ -9,10 +9,9 @@ on:
         required: false
         type: string
         default: 8.x
-      dotnet-quality:
+      runs-on:
         required: false
         type: string
-        default: ga
       solution:
         required: true
         type: string

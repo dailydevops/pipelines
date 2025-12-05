@@ -26,6 +26,9 @@ on:
       WORKFLOW_PACKAGES:
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   nuget:
     name: Publish NuGet Packages

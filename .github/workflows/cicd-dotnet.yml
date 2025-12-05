@@ -21,10 +21,6 @@ on:
         required: false
         type: string
         default: 8.x
-      dotnet-quality:
-        required: false
-        type: string
-        default: ga
       enableSonarQube:
         required: false
         type: boolean
@@ -44,14 +40,9 @@ on:
       solution:
         required: true
         type: string
-      retry-max-attempts:
+      runs-on:
         required: false
-        type: number
-        default: 1
-      retry-timeout:
-        required: false
-        type: number
-        default: 15
+        type: string
     secrets:
       FETCH_TOKEN:
         required: false

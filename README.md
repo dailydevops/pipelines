@@ -115,7 +115,6 @@ jobs:
 | `disableDependaMerge` | Disable automatic Dependabot merge | ❌ | `false` |
 | `dotnetLogging` | Verbosity level for dotnet commands | ❌ | `minimal` |
 | `dotnetVersion` | .NET SDK version(s) to install | ❌ | `8.x\n9.x` |
-| `dotnetQuality` | .NET SDK quality channel | ❌ | `ga` |
 | `enableCleanUpDockerDocker` | Free disk space by cleaning Docker images | ❌ | `false` |
 | `runsOnBuild` | Runner label for build job | ❌ | `ubuntu-latest` |
 
@@ -296,7 +295,7 @@ jobs:
     with:
       dotnet-version: "8.x"
     secrets: inherit
-  
+
   # Use the version in another job
   another-job:
     needs: version
@@ -310,7 +309,6 @@ jobs:
 | Parameter | Description | Required | Default |
 |-----------|-------------|----------|---------|
 | `dotnet-version` | .NET SDK version to install | ❌ | `8.x` |
-| `dotnet-quality` | .NET SDK quality channel | ❌ | `ga` |
 | `runs-on` | Runner label | ❌ | `ubuntu-latest` |
 
 **Outputs:**
@@ -348,7 +346,6 @@ jobs:
 |-----------|-------------|----------|---------|
 | `dotnet-logging` | Verbosity level | ❌ | `quiet` |
 | `dotnet-version` | .NET SDK version | ❌ | `8.x` |
-| `dotnet-quality` | .NET SDK quality channel | ❌ | `ga` |
 | `runs-on` | Runner label | ❌ | `ubuntu-latest` |
 
 **Secrets:**
@@ -382,7 +379,6 @@ jobs:
 | `disablePublish` | Skip uploading artifacts | ❌ | `false` |
 | `dotnet-logging` | Verbosity level | ❌ | `quiet` |
 | `dotnet-version` | .NET SDK version | ❌ | `8.x` |
-| `dotnet-quality` | .NET SDK quality channel | ❌ | `ga` |
 | `runs-on` | Runner label | ❌ | `ubuntu-latest` |
 
 **Secrets:**
@@ -411,7 +407,7 @@ jobs:
   version:
     uses: dailydevops/pipelines/.github/workflows/step-dotnet-version.yml@main
     secrets: inherit
-  
+
   test:
     needs: version
     uses: dailydevops/pipelines/.github/workflows/step-dotnet-tests.yml@main
@@ -432,10 +428,7 @@ jobs:
 | `disableCoverageUpload` | Skip coverage artifacts | ❌ | `false` |
 | `dotnet-logging` | Verbosity level | ❌ | `quiet` |
 | `dotnet-version` | .NET SDK version | ❌ | `8.x` |
-| `dotnet-quality` | .NET SDK quality channel | ❌ | `ga` |
 | `runs-on` | Runner label | ❌ | `ubuntu-latest` |
-| `retry-max-attempts` | Max retry attempts | ❌ | `3` |
-| `retry-timeout` | Timeout in minutes | ❌ | `15` |
 
 **Secrets:**
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
@@ -462,7 +455,7 @@ jobs:
   version:
     uses: dailydevops/pipelines/.github/workflows/step-dotnet-version.yml@main
     secrets: inherit
-  
+
   release:
     needs: version
     uses: dailydevops/pipelines/.github/workflows/step-dotnet-draft-release.yml@main

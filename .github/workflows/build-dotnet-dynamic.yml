@@ -13,6 +13,18 @@ on:
         required: false
         type: boolean
         default: false
+      disableTestsOnLinux:
+        required: false
+        type: boolean
+        default: false
+      disableTestsOnMacOs:
+        required: false
+        type: boolean
+        default: true
+      disableTestsOnWindows:
+        required: false
+        type: boolean
+        default: true
       dotnetLogging:
         required: false
         type: string
@@ -27,10 +39,17 @@ on:
         required: false
         type: boolean
         default: false
+      failFast:
+        required: false
+        type: boolean
+        default: true
       runsOnBuild:
         required: false
         type: string
         default: 'ubuntu-latest'
+      script-path:
+        required: true
+        type: string
       solution:
         required: true
         type: string
@@ -39,7 +58,7 @@ on:
         required: false
 
 concurrency:
-  group: ${{ github.workflow_ref }}@${{ github.ref }}-build-single-${{ inputs.solution }}
+  group: ${{ github.workflow_ref }}@${{ github.ref }}-build-matrix-${{ inputs.solution }}
   cancel-in-progress: true
 
 env:
@@ -67,6 +86,13 @@ jobs:
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
     secrets: inherit
 
+  collect:
+    name: Collect Dynamic Matrix
+    uses: ./.github/workflows/step-collect-matrix.yml
+    with:
+      script-path: ${{ inputs.script-path }}
+    secrets: inherit
+
   format:
     name: Code Formatting
     if: ${{ !inputs.disableCodeFormat }}
@@ -85,14 +111,29 @@ jobs:
     needs:
       - commitlinter
       - version
+      - collect
+    strategy:
+      fail-fast: ${{ inputs.failFast || true }}
+      matrix:
+        test-filter: ${{ fromJson(needs.collect.outputs.matrix) }}
+        os:
+          - windows-latest
+          - ubuntu-latest
+          - macos-latest
+        exclude:
+          - os: ${{ inputs.disableTestsOnMacOs && 'macos-latest' }}
+          - os: ${{ inputs.disableTestsOnLinux && 'ubuntu-latest' }}
+          - os: ${{ inputs.disableTestsOnWindows && 'windows-latest' }}
     with:
       disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
       enableCleanUpDockerDocker: ${{ inputs.enableCleanUpDockerDocker || false }}
-      runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
+      execution-name: ${{ matrix.test-filter }}
+      runs-on: ${{ matrix.os }}
       solution: ${{ inputs.solution }}
       solution-version: ${{ needs.version.outputs.solution-version }}
+      test-filter: "/*/*/*/*[TestGroup=${{ matrix.test-filter }}]"
     secrets: inherit
 
   build:

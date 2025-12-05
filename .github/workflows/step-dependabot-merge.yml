@@ -4,6 +4,9 @@ on:
       DEPENDABOT:
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   dependabot:
     name: Dependabot Auto Merge
