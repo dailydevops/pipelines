@@ -86,7 +86,7 @@ jobs:
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
     secrets: inherit
 
-  collect-matrix:
+  collect:
     name: Collect Dynamic Matrix
     uses: ./.github/workflows/step-collect-matrix.yml
     with:
@@ -111,11 +111,11 @@ jobs:
     needs:
       - commitlinter
       - version
-      - collect-matrix
+      - collect
     strategy:
       fail-fast: ${{ inputs.failFast || true }}
       matrix:
-        test-filter: ${{ fromJson(needs.collect-matrix.outputs.matrix) }}
+        test-filter: ${{ fromJson(needs.collect.outputs.matrix) }}
         os:
           - windows-latest
           - ubuntu-latest
