@@ -113,7 +113,7 @@ jobs:
       - version
       - collect
     strategy:
-      fail-fast: ${{ inputs.failFast || true }}
+      fail-fast: ${{ inputs.failFast }}
       matrix:
         test-filter: ${{ fromJson(needs.collect.outputs.matrix) }}
         os:

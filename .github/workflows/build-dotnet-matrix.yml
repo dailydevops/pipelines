@@ -102,7 +102,7 @@ jobs:
       - commitlinter
       - version
     strategy:
-      fail-fast: ${{ inputs.failFast || true }}
+      fail-fast: ${{ inputs.failFast }}
       matrix:
         os:
           - windows-latest
