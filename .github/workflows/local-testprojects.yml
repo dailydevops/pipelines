@@ -24,7 +24,7 @@ jobs:
       disableTestsOnMacOs: false
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       enableCleanUpDockerDocker: false
-      solution: ./testprojects/archiduct/ArchiDuct.sln
+      solution: ./testprojects/archiduct/ArchiDuct.slnx
     secrets: inherit
 
   healthchecks:
