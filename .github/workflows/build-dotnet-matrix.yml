@@ -137,11 +137,3 @@ jobs:
       solution: ${{ inputs.solution }}
       solution-version: ${{ needs.version.outputs.solution-version }}
     secrets: inherit
-
-  dependabot:
-    name: Dependabot Merge
-    if: ${{ !cancelled() && !failure() && github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' && inputs.disableDependaMerge != true }}
-    uses: ./.github/workflows/step-dependabot-merge.yml
-    needs:
-      - build
-    secrets: inherit
