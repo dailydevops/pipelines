@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Dependabot Auto Merge
-        uses: dailydevops/dependamerge-action@9efe2dce321609c50284032f11a71e83e8f2ce68 # v1.2.159
+        uses: dailydevops/dependamerge-action@2e94aedf3cdaab74a56e9c04333f02f5280b2647 # v1.2.185
         with:
           token: ${{ secrets.DEPENDABOT }}
           command: squash
