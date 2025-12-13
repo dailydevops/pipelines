@@ -116,7 +116,7 @@ jobs:
         files: ${{ github.workspace }}/coveragereports/Cobertura.xml
 
     - name: Upload ReportGenerator
-      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: always()
       with:
         name: reportgenerator-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}-${{ inputs.execution-name }}
@@ -124,7 +124,7 @@ jobs:
           ${{ github.workspace }}/coveragereports/**/*.*
 
     - name: Upload Coverage Reports
-      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: ${{ inputs.disableCoverageUpload == false }}
       with:
         name: coverage-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}-${{ inputs.execution-name }}
@@ -133,7 +133,7 @@ jobs:
           **/TestResults/**/*.cobertura.xml
 
     - name: Upload log files
-      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       if: ${{ always() }}
       with:
         name: logs-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}-${{ inputs.execution-name }}
