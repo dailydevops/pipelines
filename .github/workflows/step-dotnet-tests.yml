@@ -102,7 +102,7 @@ jobs:
       env:
         TUNIT_DISABLE_GITHUB_REPORTER: true
       run: |
-        dotnet test  --solution ${{ inputs.solution }}  -c Release  -v ${{ inputs.dotnet-logging || 'minimal' }}  --no-build --no-restore /p:Version=${{ inputs.solution-version }} --results-directory ./TestResults --ignore-exit-code 8 ${{ inputs.test-filter != '' && format('--treenode-filter "{0}"', inputs.test-filter) || ''}} -- --coverage --coverage-output-format cobertura
+        dotnet test  --solution ${{ inputs.solution }}  -c Release  -v ${{ inputs.dotnet-logging || 'minimal' }}  --no-build --no-restore /p:Version=${{ inputs.solution-version }} --results-directory ./TestResults --ignore-exit-code 8 ${{ inputs.test-filter != '' && format('--treenode-filter "{0}"', inputs.test-filter) || ''}} --no-progress -- --coverage --coverage-output-format cobertura
 
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@ee0ae774f6d3afedcbd1683c1ab21b83670bdf8e # v5.5.1

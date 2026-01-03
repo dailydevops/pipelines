@@ -1,7 +1,3 @@
-name: Step: Code Format Check (callable)
-
-# Purpose: Validate code formatting (e.g., CSharpier) across the repository.
-# Exposed as a callable step for inclusion in higher-level workflows.
 on:
   workflow_call:
     inputs:
