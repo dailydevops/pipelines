@@ -72,8 +72,18 @@ jobs:
         dotnet: false
         large-packages: false
         tool-cache: false
-        swap-storage: false
+        swap-storage: true
         docker-images: true
+
+    - name: Resize swapfile (Linux only)
+      if: ${{ runner.os == 'Linux' }}
+      run: |
+        sudo swapoff -a
+        sudo fallocate -l 15G /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+        sudo swapon --show
 
     - name: Setup .NET
       uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
