@@ -50,6 +50,18 @@ on:
       solution:
         required: true
         type: string
+      imageWindows:
+        required: false
+        type: string
+        default: windows-latest
+      imageLinux:
+        required: false
+        type: string
+        default: ubuntu-latest
+      imageMacos:
+        required: false
+        type: string
+        default: macos-latest
     secrets:
       FETCH_TOKEN:
         required: false
@@ -105,13 +117,13 @@ jobs:
       fail-fast: ${{ inputs.failFast }}
       matrix:
         os:
-          - windows-latest
-          - ubuntu-latest
-          - macos-latest
+          - ${{ inputs.imageWindows || 'windows-latest' }}
+          - ${{ inputs.imageLinux || 'ubuntu-latest' }}
+          - ${{ inputs.imageMacos || 'macos-latest' }}
         exclude:
-          - os: ${{ inputs.disableTestsOnMacOs && 'macos-latest' }}
-          - os: ${{ inputs.disableTestsOnLinux && 'ubuntu-latest' }}
-          - os: ${{ inputs.disableTestsOnWindows && 'windows-latest' }}
+          - os: ${{ inputs.disableTestsOnMacOs && (inputs.imageMacos || 'macos-latest') }}
+          - os: ${{ inputs.disableTestsOnLinux && (inputs.imageLinux || 'ubuntu-latest') }}
+          - os: ${{ inputs.disableTestsOnWindows && (inputs.imageWindows || 'windows-latest') }}
     with:
       disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
