@@ -1,3 +1,8 @@
+name: Step: Draft Release (callable)
+
+# Purpose: Create or update a draft release using Release Drafter. Callable
+# by other workflows when a release should be published for a given
+# `solution-version`.
 on:
   workflow_call:
     inputs:
