@@ -53,6 +53,10 @@ on:
       solution:
         required: true
         type: string
+      clearDevCerts:
+        required: false
+        type: boolean
+        default: false
     secrets:
       FETCH_TOKEN:
         required: false
@@ -125,6 +129,7 @@ jobs:
           - os: ${{ inputs.disableTestsOnLinux && 'ubuntu-latest' }}
           - os: ${{ inputs.disableTestsOnWindows && 'windows-latest' }}
     with:
+      clear-dev-certs: ${{ inputs.clearDevCerts || false }}
       disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
