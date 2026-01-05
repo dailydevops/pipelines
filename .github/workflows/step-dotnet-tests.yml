@@ -35,6 +35,10 @@ on:
         required: false
         type: string
         default: ''
+      clear-dev-certs:
+        required: false
+        type: boolean
+        default: false
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -84,6 +88,12 @@ jobs:
         sudo mkswap /swapfile
         sudo swapon /swapfile
         sudo swapon --show
+
+    - name: Clear and trust .NET dev certs
+      if: ${{ inputs.clear-dev-certs }}
+      run: |
+        dotnet dev-certs https --clean
+        dotnet dev-certs https --trust
 
     - name: Setup .NET
       uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
