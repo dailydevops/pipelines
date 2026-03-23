@@ -16,17 +16,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  archiduct:
-    name: Archiduct
-    uses: ./.github/workflows/build-dotnet-matrix.yml
-    with:
-      disableDependaMerge: true
-      disableTestsOnMacOs: false
-      dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
-      enableCleanUpDockerDocker: false
-      solution: ./testprojects/archiduct/ArchiDuct.slnx
-    secrets: inherit
-
   healthchecks:
     name: HealthChecks
     uses: ./.github/workflows/build-dotnet-dynamic.yml
@@ -48,14 +37,4 @@ jobs:
       enableCleanUpDockerDocker: true
       runsOnBuild: windows-latest
       solution: ./testprojects/hosting.winforms/Extensions.Hosting.WinForms.slnx
-    secrets: inherit
-
-  dependabot:
-    name: Dependabot Merge
-    if: ${{ github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
-    uses: ./.github/workflows/step-dependabot-merge.yml
-    needs:
-      - archiduct
-      - healthchecks
-      - hostingwinforms
     secrets: inherit
