@@ -1,0 +1,53 @@
+on:
+  workflow_call:
+    inputs:
+      configurationFile:
+        required: false
+        type: string
+        default: 'stryker-config.json'
+    secrets:
+      STRYKER_DASHBOARD_API_KEY:
+        required: true
+
+concurrency:
+  group: ${{ github.workflow_ref }}@${{ github.ref }}-mutate-${{ inputs.configurationFile }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  mutation-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Check for Stryker configuration file
+        id: check-config
+        env:
+          CONFIG_FILE: ${{ inputs.configurationFile || 'stryker-config.json' }}
+        run: |
+          if [ -f "$CONFIG_FILE" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "path=$CONFIG_FILE" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Stryker.NET against Repository
+        if: steps.check-config.outputs.exists == 'true'
+        uses: lyndychivs/dotnet-stryker-action@v1.4
+        with:
+          configurationFile: ${{ steps.check-config.outputs.path }}
+          dashboardApiKey: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+          version: ${{ github.ref_name }}
