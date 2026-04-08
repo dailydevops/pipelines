@@ -60,6 +60,7 @@ jobs:
       with:
         name: release-packages-${{ hashFiles(inputs.solution) }}
         if-no-files-found: error
+        retention-days: ${{ github.event_name == 'pull_request' && 1 || 7 }}
         path: |
           **/*.nupkg
           **/*.snupkg
