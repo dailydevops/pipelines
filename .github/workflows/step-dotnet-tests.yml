@@ -141,29 +141,23 @@ jobs:
         fail_ci_if_error: true
         files: ${{ github.workspace }}/coveragereports/Cobertura.xml
 
-    - name: Upload ReportGenerator
-      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-      if: always()
-      with:
-        name: reportgenerator-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}-${{ inputs.execution-name }}
-        path: |
-          ${{ github.workspace }}/coveragereports/**/*.*
-
     - name: Upload Coverage Reports
       uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: ${{ inputs.disableCoverageUpload == false }}
       with:
         name: coverage-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}-${{ inputs.execution-name }}
+        retention-days: 3
         path: |
           **/TestResults/**/*.opencover.xml
           **/TestResults/**/*.cobertura.xml
 
     - name: Upload log files
       uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-      if: ${{ always() }}
+      if: ${{ failure() }}
       with:
         name: logs-${{ inputs.runs-on || 'ubuntu-latest' }}-${{ hashFiles(inputs.solution) }}-${{ inputs.execution-name }}
         if-no-files-found: ignore
+        retention-days: 3
         path: |
           **/TestResults/**/*.log
           **/*.sarif
