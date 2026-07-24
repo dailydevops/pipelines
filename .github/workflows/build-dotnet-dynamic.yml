@@ -13,6 +13,10 @@ on:
         required: false
         type: boolean
         default: false
+      disablePrebuild:
+        required: false
+        type: boolean
+        default: false
       disableTestsOnLinux:
         required: false
         type: boolean
@@ -109,13 +113,30 @@ jobs:
       runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
     secrets: inherit
 
+  prebuild:
+    name: Prebuild Solution
+    if: ${{ !inputs.disablePrebuild && !inputs.disableTestsOnLinux }}
+    uses: ./.github/workflows/step-dotnet-prebuild.yml
+    needs:
+      - commitlinter
+      - version
+    with:
+      dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
+      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
+      solution: ${{ inputs.solution }}
+      solution-version: ${{ needs.version.outputs.solution-version }}
+    secrets: inherit
+
   tests:
     name: Run Tests
+    if: ${{ !cancelled() && !failure() }}
     uses: ./.github/workflows/step-dotnet-tests.yml
     needs:
       - commitlinter
       - version
       - collect
+      - prebuild
     strategy:
       fail-fast: ${{ inputs.failFast }}
       matrix:
@@ -135,6 +156,7 @@ jobs:
       dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
       enableCleanUpDockerDocker: ${{ inputs.enableCleanUpDockerDocker || false }}
       execution-name: ${{ matrix.test-filter }}
+      prebuilt-artifact: ${{ needs.prebuild.outputs.artifact-name }}
       runs-on: ${{ matrix.os }}
       solution: ${{ inputs.solution }}
       solution-version: ${{ needs.version.outputs.solution-version }}

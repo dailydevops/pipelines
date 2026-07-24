@@ -1,0 +1,87 @@
+on:
+  workflow_call:
+    inputs:
+      dotnet-logging:
+        required: false
+        type: string
+        default: quiet
+      dotnet-version:
+        required: false
+        type: string
+        default: 8.x
+      runs-on:
+        required: false
+        type: string
+        default: ubuntu-latest
+      solution:
+        required: true
+        type: string
+      solution-version:
+        required: true
+        type: string
+    secrets:
+      FETCH_TOKEN:
+        required: false
+    outputs:
+      artifact-name:
+        description: 'Name of the uploaded build output artifact'
+        value: ${{ jobs.prebuild.outputs.artifact-name }}
+
+permissions:
+  contents: read
+
+jobs:
+  prebuild:
+    name: Prebuild .NET solution
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
+
+    outputs:
+      artifact-name: ${{ steps.artifact.outputs.name }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        fetch-depth: 1
+        submodules: recursive
+        token: ${{ secrets.FETCH_TOKEN || github.token }}
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+        global-json-file: ./global.json
+
+    - name: NuGet cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props', '**/Directory.Build.props') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
+
+    # Build flags must match the build in step-dotnet-tests.yml exactly, so that
+    # `dotnet test --no-build` in the test jobs runs against identical binaries
+    # and the embedded source paths in the coverage reports stay unchanged.
+    - name: Build
+      run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-restore /p:GeneratePackageOnBuild=false /p:Version=${{ inputs.solution-version }}
+
+    - name: Determine artifact name
+      id: artifact
+      run: echo "name=prebuilt-output-${{ hashFiles(inputs.solution) }}" >> $GITHUB_OUTPUT
+
+    - name: Pack build output
+      run: |
+        find . -type d \( -name bin -o -name obj \) -not -path './.git/*' -print0 \
+          | tar --zstd -cf prebuilt-output.tzst --null --files-from -
+
+    - name: Upload build output
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: ${{ steps.artifact.outputs.name }}
+        if-no-files-found: error
+        retention-days: 1
+        path: prebuilt-output.tzst
