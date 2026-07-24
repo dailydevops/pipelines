@@ -146,7 +146,7 @@ jobs:
       if: ${{ env.codecov_token != '' && (success() || steps.test.conclusion == 'failure') }}
       with:
         token: ${{ env.codecov_token }}
-        fail_ci_if_error: true
+        fail_ci_if_error: false
         files: ${{ github.workspace }}/coveragereports/Cobertura.xml
 
     - name: Upload Coverage Reports
