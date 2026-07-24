@@ -177,9 +177,11 @@ jobs:
       solution-version: ${{ needs.version.outputs.solution-version }}
     secrets: inherit
 
-  # Best-effort deletion of the prebuilt artifact once all test jobs are done,
-  # regardless of their outcome. Requires `actions: write` on the caller's
-  # GITHUB_TOKEN; without it the artifact simply expires via retention-days.
+  # Best-effort cleanup of the prebuilt artifact once all test jobs are done,
+  # regardless of their outcome. Deleting via the REST API would require
+  # 'actions: write' on the caller's GITHUB_TOKEN (and break callers without
+  # it at startup), so the large artifact is instead replaced by a tiny
+  # placeholder via 'overwrite: true', which only needs the runtime token.
   cleanup-prebuilt:
     name: Cleanup Prebuilt Artifact
     if: ${{ always() && needs.prebuild.result == 'success' }}
@@ -187,18 +189,15 @@ jobs:
     needs:
       - prebuild
       - tests
-    permissions:
-      actions: write
     steps:
-      - name: Delete prebuilt artifact
+      - name: Create placeholder
+        run: echo "prebuilt output cleaned up after test execution" > cleaned-up.txt
+
+      - name: Replace prebuilt artifact with placeholder
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          artifact_id=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts?name=${{ needs.prebuild.outputs.artifact-name }}" -q '.artifacts[0].id')
-          if [ -n "$artifact_id" ] && [ "$artifact_id" != "null" ]; then
-            gh api -X DELETE "repos/${{ github.repository }}/actions/artifacts/$artifact_id"
-            echo "Deleted artifact ${{ needs.prebuild.outputs.artifact-name }} ($artifact_id)"
-          else
-            echo "Artifact ${{ needs.prebuild.outputs.artifact-name }} not found, nothing to delete"
-          fi
+        with:
+          name: ${{ needs.prebuild.outputs.artifact-name }}
+          path: cleaned-up.txt
+          retention-days: 1
+          overwrite: true
