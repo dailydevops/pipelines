@@ -21,6 +21,10 @@ on:
         required: false
         type: string
         default: default
+      prebuilt-artifact:
+        required: false
+        type: string
+        default: ''
       runs-on:
         required: false
         type: string
@@ -118,7 +122,23 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ inputs.solution }} -v ${{ inputs.dotnet-logging }}
 
+    # The prebuilt output is only reused on Linux, since the binaries and the
+    # source paths embedded in the coverage reports are produced on a Linux
+    # runner with an identical workspace path. Other runner types build locally.
+    - name: Download prebuilt output
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      if: ${{ inputs.prebuilt-artifact != '' && runner.os == 'Linux' }}
+      with:
+        name: ${{ inputs.prebuilt-artifact }}
+
+    - name: Extract prebuilt output
+      if: ${{ inputs.prebuilt-artifact != '' && runner.os == 'Linux' }}
+      run: |
+        tar --zstd -xf prebuilt-output.tzst
+        rm prebuilt-output.tzst
+
     - name: Build
+      if: ${{ inputs.prebuilt-artifact == '' || runner.os != 'Linux' }}
       run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-restore /p:GeneratePackageOnBuild=false /p:Version=${{ inputs.solution-version }}
 
     - name: Test
