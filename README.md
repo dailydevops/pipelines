@@ -20,6 +20,7 @@ This repository contains reusable GitHub Actions workflow templates for .NET app
   - [step-node-commitlint.yml](#step-node-commitlintyml)
   - [step-dotnet-version.yml](#step-dotnet-versionyml)
   - [step-dotnet-format.yml](#step-dotnet-formatyml)
+  - [step-dotnet-prebuild.yml](#step-dotnet-prebuildyml)
   - [step-dotnet-build.yml](#step-dotnet-buildyml)
   - [step-dotnet-tests.yml](#step-dotnet-testsyml)
   - [step-dotnet-draft-release.yml](#step-dotnet-draft-releaseyml)
@@ -90,6 +91,7 @@ These are complete CI/CD workflows that orchestrate multiple jobs.
 A fast CI pipeline that performs a single-pass build and test on a single OS. Ideal for quick feedback on pull requests.
 
 **Features:**
+
 - Commit linting
 - Build and test in one job (no separate stages)
 - Automatic Dependabot PR merging
@@ -107,18 +109,19 @@ jobs:
 
 **Parameters:**
 
-| Parameter | Description | Required | Default |
-|-----------|-------------|----------|---------|
-| `solution` | Path to the solution or project file | ✅ | |
-| `disableCodeFormat` | Skip code formatting checks | ❌ | `false` |
-| `disableCoverageUpload` | Skip uploading coverage reports | ❌ | `false` |
-| `disableDependaMerge` | Disable automatic Dependabot merge | ❌ | `false` |
-| `dotnetLogging` | Verbosity level for dotnet commands | ❌ | `minimal` |
-| `dotnetVersion` | .NET SDK version(s) to install | ❌ | `8.x\n9.x` |
-| `enableCleanUpDockerDocker` | Free disk space by cleaning Docker images | ❌ | `false` |
-| `runsOnBuild` | Runner label for build job | ❌ | `ubuntu-latest` |
+| Parameter                   | Description                               | Required | Default         |
+| --------------------------- | ----------------------------------------- | -------- | --------------- |
+| `solution`                  | Path to the solution or project file      | ✅       |                 |
+| `disableCodeFormat`         | Skip code formatting checks               | ❌       | `false`         |
+| `disableCoverageUpload`     | Skip uploading coverage reports           | ❌       | `false`         |
+| `disableDependaMerge`       | Disable automatic Dependabot merge        | ❌       | `false`         |
+| `dotnetLogging`             | Verbosity level for dotnet commands       | ❌       | `minimal`       |
+| `dotnetVersion`             | .NET SDK version(s) to install            | ❌       | `8.x\n9.x`      |
+| `enableCleanUpDockerDocker` | Free disk space by cleaning Docker images | ❌       | `false`         |
+| `runsOnBuild`               | Runner label for build job                | ❌       | `ubuntu-latest` |
 
 **Secrets:**
+
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
 
 ---
@@ -128,6 +131,7 @@ jobs:
 A comprehensive CI pipeline that runs on a single OS with separate stages for formatting, versioning, testing, and building.
 
 **Features:**
+
 - Commit linting
 - Code formatting validation
 - Version detection using GitVersion
@@ -151,6 +155,7 @@ jobs:
 Same as `build-dotnet-fast.yml`.
 
 **Secrets:**
+
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
 
 ---
@@ -160,10 +165,12 @@ Same as `build-dotnet-fast.yml`.
 A comprehensive CI pipeline that runs tests across multiple operating systems (Windows, Linux, macOS) in a matrix strategy.
 
 **Features:**
+
 - All features from `build-dotnet-single.yml`
 - Multi-OS testing (Windows, Linux, macOS)
 - Configurable fail-fast behavior
 - OS-specific test exclusions
+- Build-once/reuse: solution builds once on Linux and Linux test jobs reuse the binaries instead of rebuilding (Windows/macOS still build locally); the prebuilt artifact is cleaned up after tests finish
 
 **Usage:**
 
@@ -180,14 +187,16 @@ jobs:
 
 All parameters from `build-dotnet-single.yml`, plus:
 
-| Parameter | Description | Required | Default |
-|-----------|-------------|----------|---------|
-| `disableTestsOnLinux` | Skip tests on Linux | ❌ | `false` |
-| `disableTestsOnMacOs` | Skip tests on macOS | ❌ | `false` |
-| `disableTestsOnWindows` | Skip tests on Windows | ❌ | `false` |
-| `failFast` | Stop all jobs if one fails | ❌ | `true` |
+| Parameter               | Description                                                                              | Required | Default |
+| ----------------------- | ---------------------------------------------------------------------------------------- | -------- | ------- |
+| `disablePrebuild`       | Skip the build-once/reuse optimization; Linux test jobs build locally like Windows/macOS | ❌       | `false` |
+| `disableTestsOnLinux`   | Skip tests on Linux                                                                      | ❌       | `false` |
+| `disableTestsOnMacOs`   | Skip tests on macOS                                                                      | ❌       | `false` |
+| `disableTestsOnWindows` | Skip tests on Windows                                                                    | ❌       | `false` |
+| `failFast`              | Stop all jobs if one fails                                                               | ❌       | `true`  |
 
 **Secrets:**
+
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
 
 ---
@@ -203,6 +212,7 @@ A deprecated/experimental workflow template. This workflow is currently set to f
 A workflow for publishing NuGet packages with manual approval. This workflow verifies a successful build on the main branch and requires manual approval before publishing to NuGet.
 
 **Features:**
+
 - Cross-workflow artifact downloading
 - Build verification on main branch
 - Manual approval via GitHub Environments
@@ -223,7 +233,7 @@ jobs:
     with:
       artifactPattern: "release-packages-*"
       workflowName: "build-dotnet-single.yml"
-      runId: "1234567890"  # Get this from the workflow run you want to publish
+      runId: "1234567890" # Get this from the workflow run you want to publish
       environment: "nuget-production"
     secrets:
       NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
@@ -232,23 +242,24 @@ jobs:
 
 **Parameters:**
 
-| Parameter | Description | Required | Default |
-|-----------|-------------|----------|---------|
-| `artifactPattern` | Pattern to match artifact names | ✅ | `release-packages-*` |
-| `workflowName` | Workflow name to check for builds | ✅ | `ci-dotnet.yml` |
-| `runId` | ID of workflow run to download artifacts from | ✅ | (none) |
-| `environment` | GitHub Environment for manual approval | ✅ | `nuget-production` |
+| Parameter         | Description                                   | Required | Default              |
+| ----------------- | --------------------------------------------- | -------- | -------------------- |
+| `artifactPattern` | Pattern to match artifact names               | ✅       | `release-packages-*` |
+| `workflowName`    | Workflow name to check for builds             | ✅       | `ci-dotnet.yml`      |
+| `runId`           | ID of workflow run to download artifacts from | ✅       | (none)               |
+| `environment`     | GitHub Environment for manual approval        | ✅       | `nuget-production`   |
 
 > **Note:** Parameters marked as required have default values (except `runId`), so you only need to specify them if you want to override the defaults. The default `workflowName` value `ci-dotnet.yml` is a legacy reference - you should explicitly specify your actual build workflow name (e.g., `build-dotnet-single.yml`, `build-dotnet-matrix.yml`, or `build-dotnet-fast.yml`).
 
 **Secrets:**
 
-| Secret | Description | Required |
-|--------|-------------|----------|
-| `NUGET_TOKEN` | NuGet API key for publishing | ✅ |
-| `WORKFLOW_PACKAGES` | GitHub token for workflow/artifact access | ✅ |
+| Secret              | Description                               | Required |
+| ------------------- | ----------------------------------------- | -------- |
+| `NUGET_TOKEN`       | NuGet API key for publishing              | ✅       |
+| `WORKFLOW_PACKAGES` | GitHub token for workflow/artifact access | ✅       |
 
 **Prerequisites:**
+
 - GitHub Environment configured with manual approval reviewers
 - Source workflow must produce NuGet package artifacts
 - See [Manual Approval Setup Guide](./docs/MANUAL_APPROVAL_SETUP.md) for detailed setup instructions
@@ -275,9 +286,11 @@ jobs:
 **Parameters:** None
 
 **Secrets:**
+
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
 
 **Requirements:**
+
 - `.commitlintrc` or similar configuration file in repository root
 
 ---
@@ -306,21 +319,23 @@ jobs:
 
 **Parameters:**
 
-| Parameter | Description | Required | Default |
-|-----------|-------------|----------|---------|
-| `dotnet-version` | .NET SDK version to install | ❌ | `8.x` |
-| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+| Parameter        | Description                 | Required | Default         |
+| ---------------- | --------------------------- | -------- | --------------- |
+| `dotnet-version` | .NET SDK version to install | ❌       | `8.x`           |
+| `runs-on`        | Runner label                | ❌       | `ubuntu-latest` |
 
 **Outputs:**
 
-| Output | Description |
-|--------|-------------|
+| Output             | Description                               |
+| ------------------ | ----------------------------------------- |
 | `solution-version` | Detected semantic version (e.g., `1.2.3`) |
 
 **Secrets:**
+
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
 
 **Requirements:**
+
 - `GitVersion.yml` configuration file in repository root
 
 ---
@@ -342,17 +357,66 @@ jobs:
 
 **Parameters:**
 
-| Parameter | Description | Required | Default |
-|-----------|-------------|----------|---------|
-| `dotnet-logging` | Verbosity level | ❌ | `quiet` |
-| `dotnet-version` | .NET SDK version | ❌ | `8.x` |
-| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+| Parameter        | Description      | Required | Default         |
+| ---------------- | ---------------- | -------- | --------------- |
+| `dotnet-logging` | Verbosity level  | ❌       | `quiet`         |
+| `dotnet-version` | .NET SDK version | ❌       | `8.x`           |
+| `runs-on`        | Runner label     | ❌       | `ubuntu-latest` |
 
 **Secrets:**
+
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
 
 **Requirements:**
+
 - CSharpier will be installed automatically
+
+---
+
+### `step-dotnet-prebuild.yml`
+
+Builds the solution once (same flags as `step-dotnet-tests.yml`) and uploads `bin`/`obj` as a compressed artifact, so downstream test jobs can reuse the binaries instead of rebuilding. Used internally by `build-dotnet-matrix.yml` and the dynamic matrix workflow to skip redundant Linux builds.
+
+**Usage:**
+
+```yaml
+jobs:
+  version:
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-version.yml@main
+    secrets: inherit
+
+  prebuild:
+    needs: version
+    uses: dailydevops/pipelines/.github/workflows/step-dotnet-prebuild.yml@main
+    with:
+      solution: "src/YourApp.sln"
+      solution-version: ${{ needs.version.outputs.solution-version }}
+    secrets: inherit
+```
+
+**Parameters:**
+
+| Parameter          | Description                      | Required | Default         |
+| ------------------ | -------------------------------- | -------- | --------------- |
+| `solution`         | Path to solution or project file | ✅       |                 |
+| `solution-version` | Version from step-dotnet-version | ✅       |                 |
+| `dotnet-logging`   | Verbosity level                  | ❌       | `quiet`         |
+| `dotnet-version`   | .NET SDK version                 | ❌       | `8.x`           |
+| `runs-on`          | Runner label                     | ❌       | `ubuntu-latest` |
+
+**Outputs:**
+
+| Output          | Description                                |
+| --------------- | ------------------------------------------ |
+| `artifact-name` | Name of the uploaded build output artifact |
+
+**Secrets:**
+
+- `FETCH_TOKEN` (optional): GitHub token for private repository access
+
+**Artifacts:**
+
+- `prebuilt-output-{hash}`: Compressed (zstd) `bin`/`obj` build output, 1-day retention; consuming jobs extract it and skip their own build step
 
 ---
 
@@ -373,18 +437,20 @@ jobs:
 
 **Parameters:**
 
-| Parameter | Description | Required | Default |
-|-----------|-------------|----------|---------|
-| `solution` | Path to solution or project file | ✅ | |
-| `disablePublish` | Skip uploading artifacts | ❌ | `false` |
-| `dotnet-logging` | Verbosity level | ❌ | `quiet` |
-| `dotnet-version` | .NET SDK version | ❌ | `8.x` |
-| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+| Parameter        | Description                      | Required | Default         |
+| ---------------- | -------------------------------- | -------- | --------------- |
+| `solution`       | Path to solution or project file | ✅       |                 |
+| `disablePublish` | Skip uploading artifacts         | ❌       | `false`         |
+| `dotnet-logging` | Verbosity level                  | ❌       | `quiet`         |
+| `dotnet-version` | .NET SDK version                 | ❌       | `8.x`           |
+| `runs-on`        | Runner label                     | ❌       | `ubuntu-latest` |
 
 **Secrets:**
+
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
 
 **Artifacts:**
+
 - `release-packages`: Contains built NuGet packages (if any)
 
 ---
@@ -394,6 +460,7 @@ jobs:
 Runs tests for the .NET solution with code coverage reporting.
 
 **Features:**
+
 - Test execution with coverage collection
 - ReportGenerator for coverage reports
 - Codecov integration
@@ -419,18 +486,19 @@ jobs:
 
 **Parameters:**
 
-| Parameter | Description | Required | Default |
-|-----------|-------------|----------|---------|
-| `solution` | Path to solution or project file | ✅ | |
-| `solution-version` | Version from step-dotnet-version | ✅ | |
-| `enableSonarQube` | Enable SonarQube analysis | ❌ | `false` |
-| `enableCleanUpDockerDocker` | Free disk space | ❌ | `false` |
-| `disableCoverageUpload` | Skip coverage artifacts | ❌ | `false` |
-| `dotnet-logging` | Verbosity level | ❌ | `quiet` |
-| `dotnet-version` | .NET SDK version | ❌ | `8.x` |
-| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+| Parameter                   | Description                      | Required | Default         |
+| --------------------------- | -------------------------------- | -------- | --------------- |
+| `solution`                  | Path to solution or project file | ✅       |                 |
+| `solution-version`          | Version from step-dotnet-version | ✅       |                 |
+| `enableSonarQube`           | Enable SonarQube analysis        | ❌       | `false`         |
+| `enableCleanUpDockerDocker` | Free disk space                  | ❌       | `false`         |
+| `disableCoverageUpload`     | Skip coverage artifacts          | ❌       | `false`         |
+| `dotnet-logging`            | Verbosity level                  | ❌       | `quiet`         |
+| `dotnet-version`            | .NET SDK version                 | ❌       | `8.x`           |
+| `runs-on`                   | Runner label                     | ❌       | `ubuntu-latest` |
 
 **Secrets:**
+
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
 - `CODECOV_TOKEN` (optional): Codecov token for coverage upload
 - `SONAR_ORGANIZATION` (optional): SonarQube organization
@@ -438,6 +506,7 @@ jobs:
 - `SONAR_TOKEN` (optional): SonarQube token
 
 **Artifacts:**
+
 - `reportgenerator-{os}-{hash}`: Generated coverage reports
 - `coverage-{os}-{hash}`: Raw coverage data files
 - `logs-{os}-{hash}`: Test logs and SARIF files
@@ -466,16 +535,18 @@ jobs:
 
 **Parameters:**
 
-| Parameter | Description | Required | Default |
-|-----------|-------------|----------|---------|
-| `solution-version` | Version from step-dotnet-version | ✅ | |
-| `runs-on` | Runner label | ❌ | `ubuntu-latest` |
+| Parameter          | Description                      | Required | Default         |
+| ------------------ | -------------------------------- | -------- | --------------- |
+| `solution-version` | Version from step-dotnet-version | ✅       |                 |
+| `runs-on`          | Runner label                     | ❌       | `ubuntu-latest` |
 
 **Secrets:**
+
 - `FETCH_TOKEN` (optional): GitHub token for private repository access
 - `GITHUB_TOKEN` (required): Automatically provided
 
 **Requirements:**
+
 - `.github/release-drafter.yml` configuration file
 - Only runs on pushes to `main` branch (not pull requests)
 
@@ -503,21 +574,21 @@ jobs:
 
 **Parameters:**
 
-| Parameter | Description | Required | Default |
-|-----------|-------------|----------|---------|
-| `artifactPattern` | Pattern to match artifacts | ✅ | `release-packages-*` |
-| `environment` | GitHub Environment for approval | ✅ | `nuget-production` |
-| `runId` | Workflow run ID to download from | ✅ | |
-| `workflowName` | Source workflow name | ✅ | `ci-dotnet.yml` |
+| Parameter         | Description                      | Required | Default              |
+| ----------------- | -------------------------------- | -------- | -------------------- |
+| `artifactPattern` | Pattern to match artifacts       | ✅       | `release-packages-*` |
+| `environment`     | GitHub Environment for approval  | ✅       | `nuget-production`   |
+| `runId`           | Workflow run ID to download from | ✅       |                      |
+| `workflowName`    | Source workflow name             | ✅       | `ci-dotnet.yml`      |
 
 > **Note:** Parameters marked as required have default values (except `runId`), so you only need to specify them if you want to override the defaults. The default `workflowName` value `ci-dotnet.yml` is a legacy reference - you should explicitly specify your actual build workflow name (e.g., `build-dotnet-single.yml`, `build-dotnet-matrix.yml`, or `build-dotnet-fast.yml`).
 
 **Secrets:**
 
-| Secret | Description | Required |
-|--------|-------------|----------|
-| `NUGET_TOKEN` | NuGet API key | ✅ |
-| `WORKFLOW_PACKAGES` | GitHub token for artifacts | ✅ |
+| Secret              | Description                | Required |
+| ------------------- | -------------------------- | -------- |
+| `NUGET_TOKEN`       | NuGet API key              | ✅       |
+| `WORKFLOW_PACKAGES` | GitHub token for artifacts | ✅       |
 
 **Note:** Consider using the higher-level `publish-nuget.yml` workflow instead for a more complete publishing solution.
 
@@ -533,7 +604,7 @@ Automatically merges Dependabot pull requests after successful CI checks.
 jobs:
   dependabot:
     if: github.actor == 'dependabot[bot]'
-    needs: [build, test]  # Add your CI jobs here
+    needs: [build, test] # Add your CI jobs here
     uses: dailydevops/pipelines/.github/workflows/step-dependabot-merge.yml@main
     secrets: inherit
 ```
@@ -541,10 +612,12 @@ jobs:
 **Parameters:** None
 
 **Secrets:**
+
 - All secrets are inherited from the calling workflow
 - Requires appropriate `GITHUB_TOKEN` permissions to merge PRs
 
 **Requirements:**
+
 - Only runs on pull requests from `dependabot[bot]`
 - All required status checks must pass before merge
 
@@ -585,7 +658,7 @@ jobs:
     uses: dailydevops/pipelines/.github/workflows/build-dotnet-matrix.yml@main
     with:
       solution: "src/MyApp.sln"
-      disableTestsOnMacOs: true  # Skip macOS if not needed
+      disableTestsOnMacOs: true # Skip macOS if not needed
     secrets: inherit
 ```
 
@@ -655,7 +728,7 @@ jobs:
     with:
       artifactPattern: "release-packages-*"
       workflowName: "build-dotnet-single.yml"
-      runId: "1234567890"  # Replace with actual workflow run ID
+      runId: "1234567890" # Replace with actual workflow run ID
       environment: "nuget-production"
     secrets:
       NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
@@ -671,6 +744,7 @@ jobs:
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
 When contributing:
+
 1. Ensure your changes are backwards compatible
 2. Update documentation for any parameter or behavior changes
 3. Follow conventional commit standards
