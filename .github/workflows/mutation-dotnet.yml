@@ -50,4 +50,13 @@ jobs:
         with:
           configurationFile: ${{ steps.check-config.outputs.path }}
           dashboardApiKey: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
-          version: ${{ github.ref_name }}
+
+      - name: Upload Stryker HTML reports
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{ steps.check-config.outputs.exists == 'true' }}
+        with:
+          name: mutation-report-${{ hashFiles(steps.check-config.outputs.path) }}
+          if-no-files-found: ignore
+          retention-days: 14
+          path: |
+            **/StrykerOutput/**/*.html
