@@ -46,7 +46,7 @@ jobs:
 
       - name: Run Stryker.NET against Repository
         if: steps.check-config.outputs.exists == 'true'
-        uses: lyndychivs/dotnet-stryker-action@24a232ae4fc8c119e0e5c8e884f3a187e3993a55 # v1.7
+        uses: lyndychivs/dotnet-stryker-action@c0a04d6d86315fcf9e44274675947f7eaa44cf97 # v1.8
         with:
           configurationFile: ${{ steps.check-config.outputs.path }}
           dashboardApiKey: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
