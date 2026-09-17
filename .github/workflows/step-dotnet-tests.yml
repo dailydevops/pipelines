@@ -72,7 +72,7 @@ jobs:
     # simultaneous builds has an impact on others as well. We observed that scheduled
     # Dependabot builds blocked others in the Testcontainers organization.
     - name: Free Disk Space - Docker Images
-      uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+      uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
       if: ${{ inputs.enableCleanUpDockerDocker == true && runner.os == 'Linux' }}
       with:
         android: true
