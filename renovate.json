@@ -5,12 +5,12 @@
     ":disableDependencyDashboard",
     ":automergeMinor",
     ":automergePatch",
-    ":rebaseStalePrs",
     "helpers:pinGitHubActionDigests"
   ],
   "ignorePresets": [
     "group:monorepos"
   ],
+  "rebaseWhen": "conflicted",
   "automergeType": "pr",
   "automergeStrategy": "squash",
   "enabledManagers": [
@@ -35,6 +35,14 @@
       "semanticCommitScope": "ci",
       "assignees": [
         "samtrion"
+      ]
+    },
+    {
+      "matchManagers": [
+        "git-submodules"
+      ],
+      "schedule": [
+        "before 6am on monday"
       ]
     }
   ]

@@ -20,6 +20,7 @@ jobs:
     name: HealthChecks
     uses: ./.github/workflows/build-dotnet-dynamic.yml
     with:
+      disableCoverageUpload: ${{ github.actor == 'renovate[bot]' }}
       disableDependaMerge: true
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       enableCleanUpDockerDocker: true
@@ -32,6 +33,7 @@ jobs:
     uses: ./.github/workflows/build-dotnet-single.yml
     with:
       disableCodeFormat: true
+      disableCoverageUpload: ${{ github.actor == 'renovate[bot]' }}
       disableDependaMerge: true
       dotnetVersion: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS }}
       enableCleanUpDockerDocker: true
