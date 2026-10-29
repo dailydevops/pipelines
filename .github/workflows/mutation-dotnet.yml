@@ -37,15 +37,13 @@ jobs:
         env:
           CONFIG_FILE: ${{ inputs.configurationFile || 'stryker-config.json' }}
         run: |
-          if [ -f "$CONFIG_FILE" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "path=$CONFIG_FILE" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "::error::Stryker configuration file '$CONFIG_FILE' not found"
+            exit 1
           fi
+          echo "path=$CONFIG_FILE" >> "$GITHUB_OUTPUT"
 
       - name: Run Stryker.NET against Repository
-        if: steps.check-config.outputs.exists == 'true'
         uses: lyndychivs/dotnet-stryker-action@6dddeefcdacda767afabc94360be32b2901914e3 # v2
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
@@ -54,7 +52,6 @@ jobs:
 
       - name: Upload Stryker HTML reports
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: ${{ steps.check-config.outputs.exists == 'true' }}
         with:
           name: mutation-report-${{ hashFiles(steps.check-config.outputs.path) }}
           if-no-files-found: ignore
