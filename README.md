@@ -236,7 +236,7 @@ jobs:
       runId: "1234567890" # Get this from the workflow run you want to publish
       environment: "nuget-production"
     secrets:
-      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      NUGET_USER: ${{ secrets.NUGET_USER }}
       WORKFLOW_PACKAGES: ${{ secrets.GITHUB_TOKEN }}
 ```
 
@@ -255,7 +255,7 @@ jobs:
 
 | Secret              | Description                               | Required |
 | ------------------- | ----------------------------------------- | -------- |
-| `NUGET_TOKEN`       | NuGet API key for publishing              | ✅       |
+| `NUGET_USER`        | nuget.org profile name (Trusted Publishing) | ✅     |
 | `WORKFLOW_PACKAGES` | GitHub token for workflow/artifact access | ✅       |
 
 **Prerequisites:**
@@ -568,7 +568,7 @@ jobs:
       runId: "123456789"
       workflowName: "build-dotnet-single.yml"
     secrets:
-      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      NUGET_USER: ${{ secrets.NUGET_USER }}
       WORKFLOW_PACKAGES: ${{ secrets.GITHUB_TOKEN }}
 ```
 
@@ -587,7 +587,7 @@ jobs:
 
 | Secret              | Description                | Required |
 | ------------------- | -------------------------- | -------- |
-| `NUGET_TOKEN`       | NuGet API key              | ✅       |
+| `NUGET_USER`        | nuget.org profile name (Trusted Publishing) | ✅ |
 | `WORKFLOW_PACKAGES` | GitHub token for artifacts | ✅       |
 
 **Note:** Consider using the higher-level `publish-nuget.yml` workflow instead for a more complete publishing solution.
@@ -731,7 +731,7 @@ jobs:
       runId: "1234567890" # Replace with actual workflow run ID
       environment: "nuget-production"
     secrets:
-      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      NUGET_USER: ${{ secrets.NUGET_USER }}
       WORKFLOW_PACKAGES: ${{ secrets.GITHUB_TOKEN }}
 ```
 

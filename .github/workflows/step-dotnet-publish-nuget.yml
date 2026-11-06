@@ -21,11 +21,8 @@ on:
         default: "ci-dotnet.yml"
         description: "Name of the workflow to check for successful builds"
     secrets:
-      NUGET_TOKEN:
-        required: false
-        description: "Legacy API key. Ignored when NUGET_USER is set (Trusted Publishing)."
       NUGET_USER:
-        required: false
+        required: true
         description: "nuget.org profile name for Trusted Publishing (OIDC)"
       WORKFLOW_PACKAGES:
         required: true
@@ -56,13 +53,12 @@ jobs:
 
       - name: NuGet login (Trusted Publishing)
         id: login
-        if: ${{ env.NUGET_USER != '' }}
         uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
           user: ${{ env.NUGET_USER }}
 
       - name: Publish NuGet Package
         env:
-          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY || secrets.NUGET_TOKEN }}
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
         run: |
           dotnet nuget push packages/**/*.nupkg -k "$NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --skip-duplicate

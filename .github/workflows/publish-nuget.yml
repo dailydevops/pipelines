@@ -21,11 +21,8 @@ on:
         default: "ci-dotnet.yml"
         description: "Name of the workflow to check for successful builds"
     secrets:
-      NUGET_TOKEN:
-        required: false
-        description: "Legacy API key. Ignored when NUGET_USER is set (Trusted Publishing)."
       NUGET_USER:
-        required: false
+        required: true
         description: "nuget.org profile name for Trusted Publishing (OIDC)"
       WORKFLOW_PACKAGES:
         required: true

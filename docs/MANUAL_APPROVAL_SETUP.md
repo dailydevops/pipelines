@@ -36,7 +36,7 @@ In the environment configuration:
 If you need environment-specific secrets:
 
 1. In the environment configuration, scroll to **Environment secrets**
-2. Add any environment-specific secrets (e.g., different NUGET_TOKEN for staging vs production)
+2. Add any environment-specific secrets (e.g., different NUGET_USER for staging vs production)
 
 ## Usage Example
 
@@ -49,7 +49,7 @@ jobs:
     with:
       environment: "nuget-production"  # Your configured environment name
     secrets:
-      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      NUGET_USER: ${{ secrets.NUGET_USER }}
 ```
 
 ## Approval Process
