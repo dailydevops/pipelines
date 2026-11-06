@@ -22,7 +22,11 @@ on:
         description: "Name of the workflow to check for successful builds"
     secrets:
       NUGET_TOKEN:
-        required: true
+        required: false
+        description: "Legacy API key. Ignored when NUGET_USER is set (Trusted Publishing)."
+      NUGET_USER:
+        required: false
+        description: "nuget.org profile name for Trusted Publishing (OIDC)"
       WORKFLOW_PACKAGES:
         required: true
 
@@ -39,6 +43,7 @@ env:
 permissions:
   actions: read
   contents: write
+  id-token: write
   pull-requests: write
 
 jobs:
