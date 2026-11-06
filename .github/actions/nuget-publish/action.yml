@@ -1,0 +1,46 @@
+name: Publish NuGet packages
+description: >
+  Downloads package artifacts of a workflow run and pushes them to nuget.org using Trusted Publishing.
+  Runs inside the caller's job, so nuget.org sees the caller's workflow as `job_workflow_ref`
+  (reusable workflows are not supported by NuGet Trusted Publishing).
+  The calling job needs `id-token: write` and `actions: read`.
+
+inputs:
+  nuget-user:
+    description: "nuget.org profile name of the Trusted Publishing policy creator"
+    required: true
+  github-token:
+    description: "GitHub token used to download artifacts of another workflow run"
+    required: true
+  run-id:
+    description: "ID of the workflow run to download artifacts from"
+    required: true
+  artifact-pattern:
+    description: "Pattern to match the artifact names to download"
+    required: false
+    default: "release-packages-*"
+
+runs:
+  using: composite
+  steps:
+    - name: Download package artifacts
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      with:
+        github-token: ${{ inputs.github-token }}
+        merge-multiple: true
+        path: packages
+        pattern: ${{ inputs.artifact-pattern }}
+        run-id: ${{ inputs.run-id }}
+
+    - name: NuGet login (Trusted Publishing)
+      id: login
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+      with:
+        user: ${{ inputs.nuget-user }}
+
+    - name: Publish NuGet packages
+      shell: bash
+      env:
+        NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+      run: |
+        dotnet nuget push "packages/**/*.nupkg" -k "$NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --skip-duplicate
