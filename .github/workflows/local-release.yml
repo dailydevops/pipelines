@@ -19,7 +19,7 @@ jobs:
     name: Version
     uses: ./.github/workflows/step-dotnet-version.yml
     with:
-      dotnet-version: '8.x'
+      dotnet-version: '10.x'
 
   release:
     if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' }}

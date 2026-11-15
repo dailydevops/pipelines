@@ -21,8 +21,8 @@ on:
         required: false
         type: string
         default: |
-          8.x
-          9.x
+          10.x
+          11.x
       enableCleanUpDockerDocker:
         required: false
         type: boolean
@@ -68,7 +68,7 @@ jobs:
     name: Version Management
     uses: ./.github/workflows/step-dotnet-version.yml
     with:
-      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-version: ${{ inputs.dotnetVersion || '10.x' }}
     secrets: inherit
 
   format:
@@ -79,7 +79,7 @@ jobs:
       - commitlinter
     with:
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-version: ${{ inputs.dotnetVersion || '10.x' }}
       runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
     secrets: inherit
 
@@ -93,7 +93,7 @@ jobs:
       clear-dev-certs: ${{ inputs.clearDevCerts || false }}
       disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-version: ${{ inputs.dotnetVersion || '10.x' }}
       enableCleanUpDockerDocker: ${{ inputs.enableCleanUpDockerDocker || false }}
       runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
@@ -110,7 +110,7 @@ jobs:
       - version
     with:
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
-      dotnet-version: ${{ inputs.dotnetVersion || '8.x' }}
+      dotnet-version: ${{ inputs.dotnetVersion || '10.x' }}
       runs-on: ${{ inputs.runsOnBuild || 'ubuntu-latest' }}
       solution: ${{ inputs.solution }}
       solution-version: ${{ needs.version.outputs.solution-version }}
