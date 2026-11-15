@@ -42,7 +42,7 @@ The pipelines in this repository are designed to be composable and reusable. The
 - **Publishing** to NuGet with manual approval workflows
 - **Dependabot integration** for automated dependency updates
 
-All workflows are designed to work with .NET 8.x and 9.x by default, with configurable support for other versions.
+All workflows are designed to work with .NET 10.x and 11.x by default, with configurable support for other versions.
 
 ## Prerequisites
 
@@ -116,7 +116,7 @@ jobs:
 | `disableCoverageUpload`     | Skip uploading coverage reports           | ❌       | `false`         |
 | `disableDependaMerge`       | Disable automatic Dependabot merge        | ❌       | `false`         |
 | `dotnetLogging`             | Verbosity level for dotnet commands       | ❌       | `minimal`       |
-| `dotnetVersion`             | .NET SDK version(s) to install            | ❌       | `8.x\n9.x`      |
+| `dotnetVersion`             | .NET SDK version(s) to install            | ❌       | `10.x\n11.x`    |
 | `enableCleanUpDockerDocker` | Free disk space by cleaning Docker images | ❌       | `false`         |
 | `runsOnBuild`               | Runner label for build job                | ❌       | `ubuntu-latest` |
 
@@ -306,7 +306,7 @@ jobs:
   version:
     uses: dailydevops/pipelines/.github/workflows/step-dotnet-version.yml@main
     with:
-      dotnet-version: "8.x"
+      dotnet-version: "10.x"
     secrets: inherit
 
   # Use the version in another job
@@ -321,7 +321,7 @@ jobs:
 
 | Parameter        | Description                 | Required | Default         |
 | ---------------- | --------------------------- | -------- | --------------- |
-| `dotnet-version` | .NET SDK version to install | ❌       | `8.x`           |
+| `dotnet-version` | .NET SDK version to install | ❌       | `10.x`          |
 | `runs-on`        | Runner label                | ❌       | `ubuntu-latest` |
 
 **Outputs:**
@@ -351,7 +351,7 @@ jobs:
   format:
     uses: dailydevops/pipelines/.github/workflows/step-dotnet-format.yml@main
     with:
-      dotnet-version: "8.x"
+      dotnet-version: "10.x"
     secrets: inherit
 ```
 
@@ -360,7 +360,7 @@ jobs:
 | Parameter        | Description      | Required | Default         |
 | ---------------- | ---------------- | -------- | --------------- |
 | `dotnet-logging` | Verbosity level  | ❌       | `quiet`         |
-| `dotnet-version` | .NET SDK version | ❌       | `8.x`           |
+| `dotnet-version` | .NET SDK version | ❌       | `10.x`          |
 | `runs-on`        | Runner label     | ❌       | `ubuntu-latest` |
 
 **Secrets:**
@@ -401,7 +401,7 @@ jobs:
 | `solution`         | Path to solution or project file | ✅       |                 |
 | `solution-version` | Version from step-dotnet-version | ✅       |                 |
 | `dotnet-logging`   | Verbosity level                  | ❌       | `quiet`         |
-| `dotnet-version`   | .NET SDK version                 | ❌       | `8.x`           |
+| `dotnet-version`   | .NET SDK version                 | ❌       | `10.x`          |
 | `runs-on`          | Runner label                     | ❌       | `ubuntu-latest` |
 
 **Outputs:**
@@ -442,7 +442,7 @@ jobs:
 | `solution`       | Path to solution or project file | ✅       |                 |
 | `disablePublish` | Skip uploading artifacts         | ❌       | `false`         |
 | `dotnet-logging` | Verbosity level                  | ❌       | `quiet`         |
-| `dotnet-version` | .NET SDK version                 | ❌       | `8.x`           |
+| `dotnet-version` | .NET SDK version                 | ❌       | `10.x`          |
 | `runs-on`        | Runner label                     | ❌       | `ubuntu-latest` |
 
 **Secrets:**
@@ -494,7 +494,7 @@ jobs:
 | `enableCleanUpDockerDocker` | Free disk space                  | ❌       | `false`         |
 | `disableCoverageUpload`     | Skip coverage artifacts          | ❌       | `false`         |
 | `dotnet-logging`            | Verbosity level                  | ❌       | `quiet`         |
-| `dotnet-version`            | .NET SDK version                 | ❌       | `8.x`           |
+| `dotnet-version`            | .NET SDK version                 | ❌       | `10.x`          |
 | `runs-on`                   | Runner label                     | ❌       | `ubuntu-latest` |
 
 **Secrets:**

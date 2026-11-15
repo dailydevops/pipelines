@@ -4,7 +4,7 @@ on:
       dotnet-version:
         required: false
         type: string
-        default: 8.x
+        default: 10.x
       runs-on:
         required: false
         type: string
