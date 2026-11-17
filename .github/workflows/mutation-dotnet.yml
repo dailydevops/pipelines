@@ -41,12 +41,27 @@ jobs:
           fi
           echo "path=$CONFIG_FILE" >> "$GITHUB_OUTPUT"
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: ${{ inputs.dotnetVersion || '10.x' }}
+
+      - name: Install Stryker.NET
+        run: dotnet tool install --global dotnet-stryker --version 5.0.0
+
       - name: Run Stryker.NET against Repository
-        uses: lyndychivs/dotnet-stryker-action@6dddeefcdacda767afabc94360be32b2901914e3 # v2
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
-        with:
-          configFile: ${{ steps.check-config.outputs.path }}
+          CONFIG_FILE: ${{ steps.check-config.outputs.path }}
+        run: dotnet stryker --config-file "$CONFIG_FILE"
+
+      - name: Write Stryker step summary
+        if: ${{ !cancelled() && steps.check-config.outcome == 'success' }}
+        run: |
+          report=$(find . -path '*/StrykerOutput/*/reports/*.md' -type f | sort | tail -n 1)
+          if [ -n "$report" ]; then
+            cat "$report" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload Stryker HTML reports
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
