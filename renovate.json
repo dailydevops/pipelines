@@ -15,16 +15,30 @@
   "automergeStrategy": "squash",
   "enabledManagers": [
     "github-actions",
-    "git-submodules"
+    "git-submodules",
+    "custom.regex"
   ],
   "git-submodules": {
     "enabled": true
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "dotnet tool install --global (?<depName>\\S+) --version (?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "nuget"
+    }
+  ],
   "packageRules": [
     {
       "matchManagers": [
         "github-actions",
-        "git-submodules"
+        "git-submodules",
+        "custom.regex"
       ],
       "labels": [
         "dependency:actions"
