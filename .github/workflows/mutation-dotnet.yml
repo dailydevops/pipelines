@@ -44,7 +44,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
-          dotnet-version: ${{ inputs.dotnetVersion || '10.x' }}
+          dotnet-version: ${{ vars.NE_DOTNET_TARGETFRAMEWORKS || '10.x' }}
 
       - name: Install Stryker.NET
         run: dotnet tool install --global dotnet-stryker --version 5.0.0
