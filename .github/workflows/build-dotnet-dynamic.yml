@@ -61,6 +61,10 @@ on:
         required: false
         type: boolean
         default: false
+      preTestCommand:
+        required: false
+        type: string
+        default: ''
     secrets:
       FETCH_TOKEN:
         required: false
@@ -151,6 +155,7 @@ jobs:
           - os: ${{ inputs.disableTestsOnWindows && 'windows-latest' }}
     with:
       clear-dev-certs: ${{ inputs.clearDevCerts || false }}
+      pre-test-command: ${{ inputs.preTestCommand || '' }}
       disableCoverageUpload: ${{ inputs.disableCoverageUpload || false }}
       dotnet-logging: ${{ inputs.dotnetLogging || 'minimal' }}
       dotnet-version: ${{ inputs.dotnetVersion || '10.x' }}

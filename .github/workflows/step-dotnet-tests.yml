@@ -43,6 +43,10 @@ on:
         required: false
         type: boolean
         default: false
+      pre-test-command:
+        required: false
+        type: string
+        default: ''
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -140,6 +144,12 @@ jobs:
     - name: Build
       if: ${{ inputs.prebuilt-artifact == '' || runner.os != 'Linux' }}
       run: dotnet build ${{ inputs.solution }} -c Release -v ${{ inputs.dotnet-logging || 'minimal' }} --no-restore /p:GeneratePackageOnBuild=false /p:Version=${{ inputs.solution-version }}
+
+    - name: Run pre-test command
+      if: ${{ inputs.pre-test-command != '' }}
+      env:
+        PRE_TEST_COMMAND: ${{ inputs.pre-test-command }}
+      run: bash -c "$PRE_TEST_COMMAND"
 
     - name: Test
       id: test
